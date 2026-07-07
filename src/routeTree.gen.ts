@@ -23,6 +23,7 @@ import { Route as AuthenticatedAppOnboardingRouteImport } from './routes/_authen
 import { Route as AuthenticatedAppChatRouteImport } from './routes/_authenticated/app.chat'
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
 import { Route as AuthenticatedAppPrestadorIdRouteImport } from './routes/_authenticated/app.prestador.$id'
+import { Route as AuthenticatedAppChatIdRouteImport } from './routes/_authenticated/app.chat.$id'
 import { Route as AuthenticatedAppCategoriaIdRouteImport } from './routes/_authenticated/app.categoria.$id'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -98,6 +99,11 @@ const AuthenticatedAppPrestadorIdRoute =
     path: '/prestador/$id',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppChatIdRoute = AuthenticatedAppChatIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthenticatedAppChatRoute,
+} as any)
 const AuthenticatedAppCategoriaIdRoute =
   AuthenticatedAppCategoriaIdRouteImport.update({
     id: '/categoria/$id',
@@ -111,7 +117,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
-  '/app/chat': typeof AuthenticatedAppChatRoute
+  '/app/chat': typeof AuthenticatedAppChatRouteWithChildren
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/painel': typeof AuthenticatedAppPainelRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/app/solicitar': typeof AuthenticatedAppSolicitarRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
+  '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
 }
 export interface FileRoutesByTo {
@@ -126,7 +133,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
-  '/app/chat': typeof AuthenticatedAppChatRoute
+  '/app/chat': typeof AuthenticatedAppChatRouteWithChildren
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/painel': typeof AuthenticatedAppPainelRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/app/solicitar': typeof AuthenticatedAppSolicitarRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
+  '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
 }
 export interface FileRoutesById {
@@ -144,7 +152,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
-  '/_authenticated/app/chat': typeof AuthenticatedAppChatRoute
+  '/_authenticated/app/chat': typeof AuthenticatedAppChatRouteWithChildren
   '/_authenticated/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/_authenticated/app/painel': typeof AuthenticatedAppPainelRoute
   '/_authenticated/app/perfil': typeof AuthenticatedAppPerfilRoute
@@ -152,6 +160,7 @@ export interface FileRoutesById {
   '/_authenticated/app/solicitar': typeof AuthenticatedAppSolicitarRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
+  '/_authenticated/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/_authenticated/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
 }
 export interface FileRouteTypes {
@@ -170,6 +179,7 @@ export interface FileRouteTypes {
     | '/app/solicitar'
     | '/app/'
     | '/app/categoria/$id'
+    | '/app/chat/$id'
     | '/app/prestador/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
     | '/app/solicitar'
     | '/app'
     | '/app/categoria/$id'
+    | '/app/chat/$id'
     | '/app/prestador/$id'
   id:
     | '__root__'
@@ -202,6 +213,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/solicitar'
     | '/_authenticated/app/'
     | '/_authenticated/app/categoria/$id'
+    | '/_authenticated/app/chat/$id'
     | '/_authenticated/app/prestador/$id'
   fileRoutesById: FileRoutesById
 }
@@ -312,6 +324,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppPrestadorIdRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/chat/$id': {
+      id: '/_authenticated/app/chat/$id'
+      path: '/$id'
+      fullPath: '/app/chat/$id'
+      preLoaderRoute: typeof AuthenticatedAppChatIdRouteImport
+      parentRoute: typeof AuthenticatedAppChatRoute
+    }
     '/_authenticated/app/categoria/$id': {
       id: '/_authenticated/app/categoria/$id'
       path: '/categoria/$id'
@@ -322,9 +341,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedAppChatRouteChildren {
+  AuthenticatedAppChatIdRoute: typeof AuthenticatedAppChatIdRoute
+}
+
+const AuthenticatedAppChatRouteChildren: AuthenticatedAppChatRouteChildren = {
+  AuthenticatedAppChatIdRoute: AuthenticatedAppChatIdRoute,
+}
+
+const AuthenticatedAppChatRouteWithChildren =
+  AuthenticatedAppChatRoute._addFileChildren(AuthenticatedAppChatRouteChildren)
+
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppBuscarRoute: typeof AuthenticatedAppBuscarRoute
-  AuthenticatedAppChatRoute: typeof AuthenticatedAppChatRoute
+  AuthenticatedAppChatRoute: typeof AuthenticatedAppChatRouteWithChildren
   AuthenticatedAppOnboardingRoute: typeof AuthenticatedAppOnboardingRoute
   AuthenticatedAppPainelRoute: typeof AuthenticatedAppPainelRoute
   AuthenticatedAppPerfilRoute: typeof AuthenticatedAppPerfilRoute
@@ -337,7 +367,7 @@ interface AuthenticatedAppRouteChildren {
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppBuscarRoute: AuthenticatedAppBuscarRoute,
-  AuthenticatedAppChatRoute: AuthenticatedAppChatRoute,
+  AuthenticatedAppChatRoute: AuthenticatedAppChatRouteWithChildren,
   AuthenticatedAppOnboardingRoute: AuthenticatedAppOnboardingRoute,
   AuthenticatedAppPainelRoute: AuthenticatedAppPainelRoute,
   AuthenticatedAppPerfilRoute: AuthenticatedAppPerfilRoute,
