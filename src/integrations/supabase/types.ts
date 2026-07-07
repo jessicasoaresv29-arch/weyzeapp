@@ -14,16 +14,709 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      avaliacoes: {
+        Row: {
+          cliente_id: string
+          comentario: string | null
+          contrato_id: string | null
+          created_at: string
+          id: string
+          nota: number
+          prestador_id: string
+        }
+        Insert: {
+          cliente_id: string
+          comentario?: string | null
+          contrato_id?: string | null
+          created_at?: string
+          id?: string
+          nota: number
+          prestador_id: string
+        }
+        Update: {
+          cliente_id?: string
+          comentario?: string | null
+          contrato_id?: string | null
+          created_at?: string
+          id?: string
+          nota?: number
+          prestador_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avaliacoes_contrato_id_fkey"
+            columns: ["contrato_id"]
+            isOneToOne: false
+            referencedRelation: "contratos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avaliacoes_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categorias: {
+        Row: {
+          cor: string
+          created_at: string
+          icone: string
+          id: string
+          nome: string
+          ordem: number
+        }
+        Insert: {
+          cor?: string
+          created_at?: string
+          icone?: string
+          id?: string
+          nome: string
+          ordem?: number
+        }
+        Update: {
+          cor?: string
+          created_at?: string
+          icone?: string
+          id?: string
+          nome?: string
+          ordem?: number
+        }
+        Relationships: []
+      }
+      contratos: {
+        Row: {
+          cliente_id: string
+          created_at: string
+          data_final: string | null
+          data_inicio: string
+          id: string
+          prestador_id: string
+          proposta_id: string | null
+          solicitacao_id: string | null
+          status: Database["public"]["Enums"]["status_contrato"]
+          updated_at: string
+          valor_final: number | null
+        }
+        Insert: {
+          cliente_id: string
+          created_at?: string
+          data_final?: string | null
+          data_inicio?: string
+          id?: string
+          prestador_id: string
+          proposta_id?: string | null
+          solicitacao_id?: string | null
+          status?: Database["public"]["Enums"]["status_contrato"]
+          updated_at?: string
+          valor_final?: number | null
+        }
+        Update: {
+          cliente_id?: string
+          created_at?: string
+          data_final?: string | null
+          data_inicio?: string
+          id?: string
+          prestador_id?: string
+          proposta_id?: string | null
+          solicitacao_id?: string | null
+          status?: Database["public"]["Enums"]["status_contrato"]
+          updated_at?: string
+          valor_final?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contratos_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contratos_proposta_id_fkey"
+            columns: ["proposta_id"]
+            isOneToOne: false
+            referencedRelation: "propostas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contratos_solicitacao_id_fkey"
+            columns: ["solicitacao_id"]
+            isOneToOne: false
+            referencedRelation: "solicitacoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversas: {
+        Row: {
+          cliente_id: string
+          created_at: string
+          id: string
+          prestador_id: string
+          solicitacao_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          cliente_id: string
+          created_at?: string
+          id?: string
+          prestador_id: string
+          solicitacao_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cliente_id?: string
+          created_at?: string
+          id?: string
+          prestador_id?: string
+          solicitacao_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversas_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversas_solicitacao_id_fkey"
+            columns: ["solicitacao_id"]
+            isOneToOne: false
+            referencedRelation: "solicitacoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documentos: {
+        Row: {
+          arquivo_url: string
+          created_at: string
+          id: string
+          observacao: string | null
+          prestador_id: string
+          status: Database["public"]["Enums"]["status_documento"]
+          tipo_documento: string
+          updated_at: string
+        }
+        Insert: {
+          arquivo_url: string
+          created_at?: string
+          id?: string
+          observacao?: string | null
+          prestador_id: string
+          status?: Database["public"]["Enums"]["status_documento"]
+          tipo_documento: string
+          updated_at?: string
+        }
+        Update: {
+          arquivo_url?: string
+          created_at?: string
+          id?: string
+          observacao?: string | null
+          prestador_id?: string
+          status?: Database["public"]["Enums"]["status_documento"]
+          tipo_documento?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documentos_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      favoritos: {
+        Row: {
+          cliente_id: string
+          created_at: string
+          id: string
+          prestador_id: string
+        }
+        Insert: {
+          cliente_id: string
+          created_at?: string
+          id?: string
+          prestador_id: string
+        }
+        Update: {
+          cliente_id?: string
+          created_at?: string
+          id?: string
+          prestador_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favoritos_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mensagens: {
+        Row: {
+          arquivo_url: string | null
+          conversa_id: string
+          created_at: string
+          id: string
+          lida: boolean
+          remetente_id: string
+          texto: string | null
+        }
+        Insert: {
+          arquivo_url?: string | null
+          conversa_id: string
+          created_at?: string
+          id?: string
+          lida?: boolean
+          remetente_id: string
+          texto?: string | null
+        }
+        Update: {
+          arquivo_url?: string | null
+          conversa_id?: string
+          created_at?: string
+          id?: string
+          lida?: boolean
+          remetente_id?: string
+          texto?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mensagens_conversa_id_fkey"
+            columns: ["conversa_id"]
+            isOneToOne: false
+            referencedRelation: "conversas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notificacoes: {
+        Row: {
+          created_at: string
+          id: string
+          lida: boolean
+          link: string | null
+          mensagem: string | null
+          tipo: string
+          titulo: string
+          usuario_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lida?: boolean
+          link?: string | null
+          mensagem?: string | null
+          tipo?: string
+          titulo: string
+          usuario_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lida?: boolean
+          link?: string | null
+          mensagem?: string | null
+          tipo?: string
+          titulo?: string
+          usuario_id?: string
+        }
+        Relationships: []
+      }
+      pesquisas_ia: {
+        Row: {
+          categoria_detectada: string | null
+          created_at: string
+          id: string
+          prestadores_encontrados: Json | null
+          texto_digitado: string
+          usuario_id: string | null
+        }
+        Insert: {
+          categoria_detectada?: string | null
+          created_at?: string
+          id?: string
+          prestadores_encontrados?: Json | null
+          texto_digitado: string
+          usuario_id?: string | null
+        }
+        Update: {
+          categoria_detectada?: string | null
+          created_at?: string
+          id?: string
+          prestadores_encontrados?: Json | null
+          texto_digitado?: string
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pesquisas_ia_categoria_detectada_fkey"
+            columns: ["categoria_detectada"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portfolio: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          id: string
+          imagem_url: string
+          prestador_id: string
+          titulo: string | null
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          imagem_url: string
+          prestador_id: string
+          titulo?: string | null
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          imagem_url?: string
+          prestador_id?: string
+          titulo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prestador_categorias: {
+        Row: {
+          categoria_id: string
+          created_at: string
+          prestador_id: string
+        }
+        Insert: {
+          categoria_id: string
+          created_at?: string
+          prestador_id: string
+        }
+        Update: {
+          categoria_id?: string
+          created_at?: string
+          prestador_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prestador_categorias_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prestador_categorias_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prestadores: {
+        Row: {
+          anos_experiencia: number | null
+          atende_domicilio: boolean
+          created_at: string
+          descricao_profissional: string | null
+          disponivel: boolean
+          id: string
+          nota_media: number
+          profile_id: string
+          quantidade_avaliacoes: number
+          raio_atendimento_km: number | null
+          updated_at: string
+          valor_hora: number | null
+        }
+        Insert: {
+          anos_experiencia?: number | null
+          atende_domicilio?: boolean
+          created_at?: string
+          descricao_profissional?: string | null
+          disponivel?: boolean
+          id?: string
+          nota_media?: number
+          profile_id: string
+          quantidade_avaliacoes?: number
+          raio_atendimento_km?: number | null
+          updated_at?: string
+          valor_hora?: number | null
+        }
+        Update: {
+          anos_experiencia?: number | null
+          atende_domicilio?: boolean
+          created_at?: string
+          descricao_profissional?: string | null
+          disponivel?: boolean
+          id?: string
+          nota_media?: number
+          profile_id?: string
+          quantidade_avaliacoes?: number
+          raio_atendimento_km?: number | null
+          updated_at?: string
+          valor_hora?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prestadores_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          cidade: string | null
+          created_at: string
+          descricao: string | null
+          email: string | null
+          estado: string | null
+          foto_url: string | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          nome: string
+          telefone: string | null
+          tipo_usuario: Database["public"]["Enums"]["tipo_usuario"]
+          updated_at: string
+          verificado: boolean
+        }
+        Insert: {
+          cidade?: string | null
+          created_at?: string
+          descricao?: string | null
+          email?: string | null
+          estado?: string | null
+          foto_url?: string | null
+          id: string
+          latitude?: number | null
+          longitude?: number | null
+          nome?: string
+          telefone?: string | null
+          tipo_usuario?: Database["public"]["Enums"]["tipo_usuario"]
+          updated_at?: string
+          verificado?: boolean
+        }
+        Update: {
+          cidade?: string | null
+          created_at?: string
+          descricao?: string | null
+          email?: string | null
+          estado?: string | null
+          foto_url?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          nome?: string
+          telefone?: string | null
+          tipo_usuario?: Database["public"]["Enums"]["tipo_usuario"]
+          updated_at?: string
+          verificado?: boolean
+        }
+        Relationships: []
+      }
+      propostas: {
+        Row: {
+          created_at: string
+          id: string
+          mensagem: string | null
+          prazo_dias: number | null
+          prestador_id: string
+          solicitacao_id: string
+          status: Database["public"]["Enums"]["status_proposta"]
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mensagem?: string | null
+          prazo_dias?: number | null
+          prestador_id: string
+          solicitacao_id: string
+          status?: Database["public"]["Enums"]["status_proposta"]
+          updated_at?: string
+          valor: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mensagem?: string | null
+          prazo_dias?: number | null
+          prestador_id?: string
+          solicitacao_id?: string
+          status?: Database["public"]["Enums"]["status_proposta"]
+          updated_at?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "propostas_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "propostas_solicitacao_id_fkey"
+            columns: ["solicitacao_id"]
+            isOneToOne: false
+            referencedRelation: "solicitacoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solicitacoes: {
+        Row: {
+          categoria_id: string | null
+          cidade: string | null
+          cliente_id: string
+          created_at: string
+          data_servico: string | null
+          descricao: string | null
+          endereco: string | null
+          estado: string | null
+          fotos: string[] | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          prestador_alvo_id: string | null
+          status: Database["public"]["Enums"]["status_solicitacao"]
+          titulo: string
+          updated_at: string
+          urgencia: Database["public"]["Enums"]["urgencia"]
+          valor_estimado: number | null
+        }
+        Insert: {
+          categoria_id?: string | null
+          cidade?: string | null
+          cliente_id: string
+          created_at?: string
+          data_servico?: string | null
+          descricao?: string | null
+          endereco?: string | null
+          estado?: string | null
+          fotos?: string[] | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          prestador_alvo_id?: string | null
+          status?: Database["public"]["Enums"]["status_solicitacao"]
+          titulo: string
+          updated_at?: string
+          urgencia?: Database["public"]["Enums"]["urgencia"]
+          valor_estimado?: number | null
+        }
+        Update: {
+          categoria_id?: string | null
+          cidade?: string | null
+          cliente_id?: string
+          created_at?: string
+          data_servico?: string | null
+          descricao?: string | null
+          endereco?: string | null
+          estado?: string | null
+          fotos?: string[] | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          prestador_alvo_id?: string | null
+          status?: Database["public"]["Enums"]["status_solicitacao"]
+          titulo?: string
+          updated_at?: string
+          urgencia?: Database["public"]["Enums"]["urgencia"]
+          valor_estimado?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solicitacoes_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "solicitacoes_prestador_alvo_id_fkey"
+            columns: ["prestador_alvo_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderador" | "usuario"
+      status_contrato: "ativo" | "concluido" | "cancelado"
+      status_documento: "pendente" | "aprovado" | "recusado"
+      status_proposta: "enviada" | "aceita" | "recusada" | "cancelada"
+      status_solicitacao:
+        | "aberto"
+        | "recebendo_propostas"
+        | "aceito"
+        | "em_andamento"
+        | "concluido"
+        | "cancelado"
+      tipo_usuario: "cliente" | "prestador"
+      urgencia: "baixa" | "media" | "alta"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +843,21 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderador", "usuario"],
+      status_contrato: ["ativo", "concluido", "cancelado"],
+      status_documento: ["pendente", "aprovado", "recusado"],
+      status_proposta: ["enviada", "aceita", "recusada", "cancelada"],
+      status_solicitacao: [
+        "aberto",
+        "recebendo_propostas",
+        "aceito",
+        "em_andamento",
+        "concluido",
+        "cancelado",
+      ],
+      tipo_usuario: ["cliente", "prestador"],
+      urgencia: ["baixa", "media", "alta"],
+    },
   },
 } as const
