@@ -1,17 +1,27 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Search, Inbox, User } from "lucide-react";
+import { Home, Search, Inbox, User, MessageSquare, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
 
 type Item = { to: string; label: string; icon: typeof Home; exact?: boolean };
-const items: Item[] = [
+const clienteItems: Item[] = [
   { to: "/app", label: "Início", icon: Home, exact: true },
   { to: "/app/buscar", label: "Buscar", icon: Search },
   { to: "/app/solicitacoes", label: "Pedidos", icon: Inbox },
+  { to: "/app/chat", label: "Chat", icon: MessageSquare },
+  { to: "/app/perfil", label: "Perfil", icon: User },
+];
+const prestadorItems: Item[] = [
+  { to: "/app/painel", label: "Painel", icon: LayoutDashboard },
+  { to: "/app/buscar", label: "Explorar", icon: Search },
+  { to: "/app/chat", label: "Chat", icon: MessageSquare },
   { to: "/app/perfil", label: "Perfil", icon: User },
 ];
 
 export function BottomNav() {
   const location = useLocation();
+  const { profile } = useAuth();
+  const items = profile?.tipo_usuario === "prestador" ? prestadorItems : clienteItems;
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur-lg pb-[env(safe-area-inset-bottom)]">
       <ul className="mx-auto flex max-w-md items-stretch justify-around px-2">

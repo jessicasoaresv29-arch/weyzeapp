@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { Search, Bell, Star } from "lucide-react";
 
 import { fetchCategorias, fetchTopPrestadores } from "@/lib/data";
@@ -15,6 +16,9 @@ export const Route = createFileRoute("/_authenticated/app/")({
 function Home() {
   const { profile } = useAuth();
   const navigate = useNavigate();
+  useEffect(() => {
+    if (profile?.tipo_usuario === "prestador") navigate({ to: "/app/painel", replace: true });
+  }, [profile, navigate]);
   const cats = useQuery({ queryKey: ["categorias"], queryFn: fetchCategorias });
   const top = useQuery({ queryKey: ["prestadores", "top"], queryFn: () => fetchTopPrestadores(6) });
 

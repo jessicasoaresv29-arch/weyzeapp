@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { Plus, Clock } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Plus, Clock, Check, X } from "lucide-react";
+import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -21,19 +22,27 @@ const STATUS_LABEL: Record<string, { text: string; color: string }> = {
 
 function Solicitacoes() {
   const { user } = useAuth();
+  const qc = useQueryClient();
   const q = useQuery({
     queryKey: ["minhas-solicitacoes", user?.id],
     enabled: !!user,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("solicitacoes")
-        .select("id,titulo,descricao,status,urgencia,cidade,data_servico,created_at")
+        .select("id,titulo,descricao,status,urgencia,cidade,data_servico,created_at, propostas(id, valor, mensagem, prazo_dias, status, prestador_id, prestadores(profiles(nome, foto_url)))")
         .eq("cliente_id", user!.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
     },
   });
+
+  async function responder(propostaId: string, status: "aceita" | "recusada") {
+    const { error } = await supabase.from("propostas").update({ status }).eq("id", propostaId);
+    if (error) return toast.error(error.message);
+    toast.success(status === "aceita" ? "Proposta aceita! Chat liberado." : "Proposta recusada.");
+    qc.invalidateQueries({ queryKey: ["minhas-solicitacoes"] });
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -59,8 +68,9 @@ function Solicitacoes() {
             <p className="mt-1 text-sm text-muted-foreground">Toque em "Nova solicitação" para começar.</p>
           </div>
         ) : (
-          (q.data ?? []).map((s) => {
+          (q.data ?? []).map((s: any) => {
             const st = STATUS_LABEL[s.status] ?? STATUS_LABEL.aberto;
+            const propostas = (s.propostas ?? []).filter((p: any) => p.status === "enviada");
             return (
               <div key={s.id} className="rounded-2xl border border-border bg-card p-4 shadow-card">
                 <div className="flex items-start justify-between gap-3">
@@ -72,6 +82,24 @@ function Solicitacoes() {
                   <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{new Date(s.created_at).toLocaleDateString("pt-BR")}</span>
                   {s.cidade && <span>{s.cidade}</span>}
                 </div>
+                {propostas.length > 0 && (
+                  <div className="mt-3 space-y-2 border-t border-border pt-3">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{propostas.length} proposta(s) recebida(s)</p>
+                    {propostas.map((p: any) => (
+                      <div key={p.id} className="rounded-xl bg-secondary p-3">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-semibold">{p.prestadores?.profiles?.nome ?? "Prestador"}</p>
+                          <p className="text-sm font-bold text-success">R$ {Number(p.valor).toFixed(2)}</p>
+                        </div>
+                        {p.mensagem && <p className="mt-1 text-xs text-muted-foreground">{p.mensagem}</p>}
+                        <div className="mt-2 flex gap-2">
+                          <Button size="sm" onClick={() => responder(p.id, "aceita")} className="flex-1 rounded-lg bg-success text-success-foreground hover:bg-success/90"><Check className="h-4 w-4" /> Aceitar</Button>
+                          <Button size="sm" variant="outline" onClick={() => responder(p.id, "recusada")} className="rounded-lg"><X className="h-4 w-4" /></Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })

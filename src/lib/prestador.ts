@@ -1,0 +1,73 @@
+import { supabase } from "@/integrations/supabase/client";
+
+export async function getMyPrestador(userId: string) {
+  const { data } = await supabase
+    .from("prestadores")
+    .select("id, disponivel, descricao_profissional, anos_experiencia, valor_hora, raio_atendimento_km, atende_domicilio, prestador_categorias(categoria_id)")
+    .eq("profile_id", userId)
+    .maybeSingle();
+  return data;
+}
+
+export async function ensurePrestador(userId: string) {
+  const existing = await getMyPrestador(userId);
+  if (existing) return existing;
+  const { data, error } = await supabase
+    .from("prestadores")
+    .insert({ profile_id: userId, disponivel: false })
+    .select("id, disponivel, descricao_profissional, anos_experiencia, valor_hora, raio_atendimento_km, atende_domicilio, prestador_categorias(categoria_id)")
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function fetchSolicitacoesAbertas(prestadorId: string, categoriaIds: string[]) {
+  // Direcionadas OU abertas em categorias do prestador
+  const cats = categoriaIds.length ? categoriaIds : ["00000000-0000-0000-0000-000000000000"];
+  const { data, error } = await supabase
+    .from("solicitacoes")
+    .select("id, titulo, descricao, cidade, estado, urgencia, valor_estimado, data_servico, created_at, categoria_id, cliente_id, prestador_alvo_id, status, categorias(nome), profiles!solicitacoes_cliente_id_fkey(nome, foto_url)")
+    .in("status", ["aberto", "recebendo_propostas"])
+    .or(`prestador_alvo_id.eq.${prestadorId},categoria_id.in.(${cats.join(",")})`)
+    .order("created_at", { ascending: false })
+    .limit(50);
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function fetchMinhasPropostas(prestadorId: string) {
+  const { data, error } = await supabase
+    .from("propostas")
+    .select("id, valor, status, mensagem, created_at, solicitacao_id, solicitacoes(titulo, cidade, cliente_id)")
+    .eq("prestador_id", prestadorId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function fetchConversasDoUsuario(userId: string, prestadorId: string | null) {
+  const filter = prestadorId
+    ? `cliente_id.eq.${userId},prestador_id.eq.${prestadorId}`
+    : `cliente_id.eq.${userId}`;
+  const { data, error } = await supabase
+    .from("conversas")
+    .select("id, cliente_id, prestador_id, solicitacao_id, updated_at, solicitacoes(titulo), prestadores(profile_id, profiles(nome, foto_url)), cliente:profiles!conversas_cliente_id_fkey(nome, foto_url)")
+    .or(filter)
+    .order("updated_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function iniciarConversa(clienteId: string, prestadorId: string, solicitacaoId: string | null) {
+  let query = supabase.from("conversas").select("id").eq("cliente_id", clienteId).eq("prestador_id", prestadorId);
+  query = solicitacaoId ? query.eq("solicitacao_id", solicitacaoId) : query.is("solicitacao_id", null);
+  const { data: existing } = await query.maybeSingle();
+  if (existing) return existing.id;
+  const { data, error } = await supabase
+    .from("conversas")
+    .insert({ cliente_id: clienteId, prestador_id: prestadorId, solicitacao_id: solicitacaoId })
+    .select("id")
+    .single();
+  if (error) throw error;
+  return data.id;
+}

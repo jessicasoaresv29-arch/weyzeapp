@@ -1,0 +1,106 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowLeft, Send, Loader2 } from "lucide-react";
+
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+export const Route = createFileRoute("/_authenticated/app/chat/$id")({
+  component: ChatConversation,
+});
+
+type Msg = { id: string; conversa_id: string; remetente_id: string; texto: string | null; created_at: string };
+
+function ChatConversation() {
+  const { id } = Route.useParams();
+  const { user } = useAuth();
+  const [messages, setMessages] = useState<Msg[]>([]);
+  const [text, setText] = useState("");
+  const [sending, setSending] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const convQ = useQuery({
+    queryKey: ["conversa", id], enabled: !!id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("conversas")
+        .select("id, cliente_id, prestador_id, solicitacao_id, solicitacoes(titulo), prestadores(profile_id, profiles(nome, foto_url)), cliente:profiles!conversas_cliente_id_fkey(nome, foto_url)")
+        .eq("id", id).maybeSingle();
+      return data;
+    },
+  });
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const { data } = await supabase.from("mensagens").select("*").eq("conversa_id", id).order("created_at");
+      if (mounted) setMessages((data ?? []) as Msg[]);
+    })();
+    const channel = supabase.channel(`msg-${id}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "mensagens", filter: `conversa_id=eq.${id}` }, (payload) => {
+        setMessages((prev) => [...prev, payload.new as Msg]);
+      })
+      .subscribe();
+    return () => { mounted = false; supabase.removeChannel(channel); };
+  }, [id]);
+
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages.length]);
+
+  async function send(e: React.FormEvent) {
+    e.preventDefault();
+    if (!text.trim() || !user) return;
+    setSending(true);
+    const { error } = await supabase.from("mensagens").insert({ conversa_id: id, remetente_id: user.id, texto: text.trim() });
+    setSending(false);
+    if (error) return;
+    setText("");
+  }
+
+  const conv: any = convQ.data;
+  const isCliente = conv?.cliente_id === user?.id;
+  const other = isCliente ? conv?.prestadores?.profiles : conv?.cliente;
+
+  return (
+    <div className="flex h-[calc(100vh-4rem)] flex-col">
+      <header className="flex items-center gap-3 border-b border-border bg-card px-4 py-3">
+        <Link to="/app/chat" className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary">
+          <ArrowLeft className="h-5 w-5" />
+        </Link>
+        {other?.foto_url
+          ? <img src={other.foto_url} alt="" className="h-10 w-10 rounded-full object-cover" />
+          : <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-gradient text-white font-bold">{other?.nome?.[0]?.toUpperCase() ?? "?"}</div>}
+        <div className="min-w-0">
+          <p className="truncate font-semibold">{other?.nome ?? "Conversa"}</p>
+          <p className="truncate text-xs text-muted-foreground">{conv?.solicitacoes?.titulo ?? ""}</p>
+        </div>
+      </header>
+
+      <div className="flex-1 space-y-2 overflow-y-auto bg-secondary/40 p-4">
+        {messages.map((m) => {
+          const mine = m.remetente_id === user?.id;
+          return (
+            <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow-sm ${mine ? "bg-primary text-primary-foreground" : "bg-card text-foreground"}`}>
+                {m.texto}
+                <div className={`mt-1 text-[10px] ${mine ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                  {new Date(m.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={bottomRef} />
+      </div>
+
+      <form onSubmit={send} className="flex items-center gap-2 border-t border-border bg-card p-3">
+        <Input value={text} onChange={(e) => setText(e.target.value)} placeholder="Escreva uma mensagem…" className="h-12 rounded-full" />
+        <Button type="submit" disabled={sending || !text.trim()} size="icon" className="h-12 w-12 rounded-full bg-success text-success-foreground hover:bg-success/90">
+          {sending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+        </Button>
+      </form>
+    </div>
+  );
+}
