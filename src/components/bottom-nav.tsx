@@ -2,12 +2,13 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { Home, Search, Inbox, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const items = [
+type Item = { to: string; label: string; icon: typeof Home; exact?: boolean };
+const items: Item[] = [
   { to: "/app", label: "Início", icon: Home, exact: true },
   { to: "/app/buscar", label: "Buscar", icon: Search },
   { to: "/app/solicitacoes", label: "Pedidos", icon: Inbox },
   { to: "/app/perfil", label: "Perfil", icon: User },
-] as const;
+];
 
 export function BottomNav() {
   const location = useLocation();
