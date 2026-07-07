@@ -25,6 +25,7 @@ import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAppPrestadorIdRouteImport } from './routes/_authenticated/app.prestador.$id'
 import { Route as AuthenticatedAppChatIdRouteImport } from './routes/_authenticated/app.chat.$id'
 import { Route as AuthenticatedAppCategoriaIdRouteImport } from './routes/_authenticated/app.categoria.$id'
+import { Route as AuthenticatedAppAvaliarContratoIdRouteImport } from './routes/_authenticated/app.avaliar.$contratoId'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -110,6 +111,12 @@ const AuthenticatedAppCategoriaIdRoute =
     path: '/categoria/$id',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppAvaliarContratoIdRoute =
+  AuthenticatedAppAvaliarContratoIdRouteImport.update({
+    id: '/avaliar/$contratoId',
+    path: '/avaliar/$contratoId',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -124,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
   '/app/solicitar': typeof AuthenticatedAppSolicitarRoute
   '/app/': typeof AuthenticatedAppIndexRoute
+  '/app/avaliar/$contratoId': typeof AuthenticatedAppAvaliarContratoIdRoute
   '/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
@@ -140,6 +148,7 @@ export interface FileRoutesByTo {
   '/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
   '/app/solicitar': typeof AuthenticatedAppSolicitarRoute
   '/app': typeof AuthenticatedAppIndexRoute
+  '/app/avaliar/$contratoId': typeof AuthenticatedAppAvaliarContratoIdRoute
   '/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
@@ -159,6 +168,7 @@ export interface FileRoutesById {
   '/_authenticated/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
   '/_authenticated/app/solicitar': typeof AuthenticatedAppSolicitarRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
+  '/_authenticated/app/avaliar/$contratoId': typeof AuthenticatedAppAvaliarContratoIdRoute
   '/_authenticated/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
   '/_authenticated/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/_authenticated/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/app/solicitacoes'
     | '/app/solicitar'
     | '/app/'
+    | '/app/avaliar/$contratoId'
     | '/app/categoria/$id'
     | '/app/chat/$id'
     | '/app/prestador/$id'
@@ -194,6 +205,7 @@ export interface FileRouteTypes {
     | '/app/solicitacoes'
     | '/app/solicitar'
     | '/app'
+    | '/app/avaliar/$contratoId'
     | '/app/categoria/$id'
     | '/app/chat/$id'
     | '/app/prestador/$id'
@@ -212,6 +224,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/solicitacoes'
     | '/_authenticated/app/solicitar'
     | '/_authenticated/app/'
+    | '/_authenticated/app/avaliar/$contratoId'
     | '/_authenticated/app/categoria/$id'
     | '/_authenticated/app/chat/$id'
     | '/_authenticated/app/prestador/$id'
@@ -338,6 +351,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppCategoriaIdRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/avaliar/$contratoId': {
+      id: '/_authenticated/app/avaliar/$contratoId'
+      path: '/avaliar/$contratoId'
+      fullPath: '/app/avaliar/$contratoId'
+      preLoaderRoute: typeof AuthenticatedAppAvaliarContratoIdRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
   }
 }
 
@@ -361,6 +381,7 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppSolicitacoesRoute: typeof AuthenticatedAppSolicitacoesRoute
   AuthenticatedAppSolicitarRoute: typeof AuthenticatedAppSolicitarRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
+  AuthenticatedAppAvaliarContratoIdRoute: typeof AuthenticatedAppAvaliarContratoIdRoute
   AuthenticatedAppCategoriaIdRoute: typeof AuthenticatedAppCategoriaIdRoute
   AuthenticatedAppPrestadorIdRoute: typeof AuthenticatedAppPrestadorIdRoute
 }
@@ -374,6 +395,8 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppSolicitacoesRoute: AuthenticatedAppSolicitacoesRoute,
   AuthenticatedAppSolicitarRoute: AuthenticatedAppSolicitarRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
+  AuthenticatedAppAvaliarContratoIdRoute:
+    AuthenticatedAppAvaliarContratoIdRoute,
   AuthenticatedAppCategoriaIdRoute: AuthenticatedAppCategoriaIdRoute,
   AuthenticatedAppPrestadorIdRoute: AuthenticatedAppPrestadorIdRoute,
 }
