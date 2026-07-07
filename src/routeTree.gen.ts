@@ -9,15 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
+import { Route as AuthenticatedAppSolicitarRouteImport } from './routes/_authenticated/app.solicitar'
+import { Route as AuthenticatedAppSolicitacoesRouteImport } from './routes/_authenticated/app.solicitacoes'
+import { Route as AuthenticatedAppPerfilRouteImport } from './routes/_authenticated/app.perfil'
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
 import { Route as AuthenticatedAppPrestadorIdRouteImport } from './routes/_authenticated/app.prestador.$id'
 import { Route as AuthenticatedAppCategoriaIdRouteImport } from './routes/_authenticated/app.categoria.$id'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -42,6 +51,23 @@ const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppSolicitarRoute =
+  AuthenticatedAppSolicitarRouteImport.update({
+    id: '/solicitar',
+    path: '/solicitar',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppSolicitacoesRoute =
+  AuthenticatedAppSolicitacoesRouteImport.update({
+    id: '/solicitacoes',
+    path: '/solicitacoes',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppPerfilRoute = AuthenticatedAppPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedAppBuscarRoute = AuthenticatedAppBuscarRouteImport.update({
   id: '/buscar',
   path: '/buscar',
@@ -63,8 +89,12 @@ const AuthenticatedAppCategoriaIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/app/perfil': typeof AuthenticatedAppPerfilRoute
+  '/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
+  '/app/solicitar': typeof AuthenticatedAppSolicitarRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
   '/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
@@ -72,7 +102,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/app/perfil': typeof AuthenticatedAppPerfilRoute
+  '/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
+  '/app/solicitar': typeof AuthenticatedAppSolicitarRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
   '/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
@@ -82,8 +116,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/_authenticated/app/perfil': typeof AuthenticatedAppPerfilRoute
+  '/_authenticated/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
+  '/_authenticated/app/solicitar': typeof AuthenticatedAppSolicitarRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
   '/_authenticated/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
@@ -93,8 +131,12 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/reset-password'
     | '/app'
     | '/app/buscar'
+    | '/app/perfil'
+    | '/app/solicitacoes'
+    | '/app/solicitar'
     | '/app/'
     | '/app/categoria/$id'
     | '/app/prestador/$id'
@@ -102,7 +144,11 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/reset-password'
     | '/app/buscar'
+    | '/app/perfil'
+    | '/app/solicitacoes'
+    | '/app/solicitar'
     | '/app'
     | '/app/categoria/$id'
     | '/app/prestador/$id'
@@ -111,8 +157,12 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/reset-password'
     | '/_authenticated/app'
     | '/_authenticated/app/buscar'
+    | '/_authenticated/app/perfil'
+    | '/_authenticated/app/solicitacoes'
+    | '/_authenticated/app/solicitar'
     | '/_authenticated/app/'
     | '/_authenticated/app/categoria/$id'
     | '/_authenticated/app/prestador/$id'
@@ -122,10 +172,18 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -161,6 +219,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/solicitar': {
+      id: '/_authenticated/app/solicitar'
+      path: '/solicitar'
+      fullPath: '/app/solicitar'
+      preLoaderRoute: typeof AuthenticatedAppSolicitarRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/solicitacoes': {
+      id: '/_authenticated/app/solicitacoes'
+      path: '/solicitacoes'
+      fullPath: '/app/solicitacoes'
+      preLoaderRoute: typeof AuthenticatedAppSolicitacoesRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/perfil': {
+      id: '/_authenticated/app/perfil'
+      path: '/perfil'
+      fullPath: '/app/perfil'
+      preLoaderRoute: typeof AuthenticatedAppPerfilRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/buscar': {
       id: '/_authenticated/app/buscar'
       path: '/buscar'
@@ -187,6 +266,9 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppBuscarRoute: typeof AuthenticatedAppBuscarRoute
+  AuthenticatedAppPerfilRoute: typeof AuthenticatedAppPerfilRoute
+  AuthenticatedAppSolicitacoesRoute: typeof AuthenticatedAppSolicitacoesRoute
+  AuthenticatedAppSolicitarRoute: typeof AuthenticatedAppSolicitarRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppCategoriaIdRoute: typeof AuthenticatedAppCategoriaIdRoute
   AuthenticatedAppPrestadorIdRoute: typeof AuthenticatedAppPrestadorIdRoute
@@ -194,6 +276,9 @@ interface AuthenticatedAppRouteChildren {
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppBuscarRoute: AuthenticatedAppBuscarRoute,
+  AuthenticatedAppPerfilRoute: AuthenticatedAppPerfilRoute,
+  AuthenticatedAppSolicitacoesRoute: AuthenticatedAppSolicitacoesRoute,
+  AuthenticatedAppSolicitarRoute: AuthenticatedAppSolicitarRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
   AuthenticatedAppCategoriaIdRoute: AuthenticatedAppCategoriaIdRoute,
   AuthenticatedAppPrestadorIdRoute: AuthenticatedAppPrestadorIdRoute,
@@ -217,6 +302,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
