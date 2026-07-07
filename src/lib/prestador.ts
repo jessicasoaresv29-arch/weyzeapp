@@ -59,13 +59,9 @@ export async function fetchConversasDoUsuario(userId: string, prestadorId: strin
 }
 
 export async function iniciarConversa(clienteId: string, prestadorId: string, solicitacaoId: string | null) {
-  const { data: existing } = await supabase
-    .from("conversas")
-    .select("id")
-    .eq("cliente_id", clienteId)
-    .eq("prestador_id", prestadorId)
-    .is("solicitacao_id", solicitacaoId ? undefined : null)
-    .maybeSingle();
+  let query = supabase.from("conversas").select("id").eq("cliente_id", clienteId).eq("prestador_id", prestadorId);
+  query = solicitacaoId ? query.eq("solicitacao_id", solicitacaoId) : query.is("solicitacao_id", null);
+  const { data: existing } = await query.maybeSingle();
   if (existing) return existing.id;
   const { data, error } = await supabase
     .from("conversas")
