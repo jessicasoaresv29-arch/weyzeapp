@@ -18,6 +18,7 @@ import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAppSolicitarRouteImport } from './routes/_authenticated/app.solicitar'
 import { Route as AuthenticatedAppSolicitacoesRouteImport } from './routes/_authenticated/app.solicitacoes'
 import { Route as AuthenticatedAppPerfilRouteImport } from './routes/_authenticated/app.perfil'
+import { Route as AuthenticatedAppOnboardingRouteImport } from './routes/_authenticated/app.onboarding'
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
 import { Route as AuthenticatedAppPrestadorIdRouteImport } from './routes/_authenticated/app.prestador.$id'
 import { Route as AuthenticatedAppCategoriaIdRouteImport } from './routes/_authenticated/app.categoria.$id'
@@ -68,6 +69,12 @@ const AuthenticatedAppPerfilRoute = AuthenticatedAppPerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppOnboardingRoute =
+  AuthenticatedAppOnboardingRouteImport.update({
+    id: '/onboarding',
+    path: '/onboarding',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppBuscarRoute = AuthenticatedAppBuscarRouteImport.update({
   id: '/buscar',
   path: '/buscar',
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
   '/app/solicitar': typeof AuthenticatedAppSolicitarRoute
@@ -104,6 +112,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
   '/app/solicitar': typeof AuthenticatedAppSolicitarRoute
@@ -119,6 +128,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/_authenticated/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/_authenticated/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/_authenticated/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
   '/_authenticated/app/solicitar': typeof AuthenticatedAppSolicitarRoute
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/app'
     | '/app/buscar'
+    | '/app/onboarding'
     | '/app/perfil'
     | '/app/solicitacoes'
     | '/app/solicitar'
@@ -146,6 +157,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/app/buscar'
+    | '/app/onboarding'
     | '/app/perfil'
     | '/app/solicitacoes'
     | '/app/solicitar'
@@ -160,6 +172,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/app'
     | '/_authenticated/app/buscar'
+    | '/_authenticated/app/onboarding'
     | '/_authenticated/app/perfil'
     | '/_authenticated/app/solicitacoes'
     | '/_authenticated/app/solicitar'
@@ -240,6 +253,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppPerfilRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/onboarding': {
+      id: '/_authenticated/app/onboarding'
+      path: '/onboarding'
+      fullPath: '/app/onboarding'
+      preLoaderRoute: typeof AuthenticatedAppOnboardingRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/buscar': {
       id: '/_authenticated/app/buscar'
       path: '/buscar'
@@ -266,6 +286,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppBuscarRoute: typeof AuthenticatedAppBuscarRoute
+  AuthenticatedAppOnboardingRoute: typeof AuthenticatedAppOnboardingRoute
   AuthenticatedAppPerfilRoute: typeof AuthenticatedAppPerfilRoute
   AuthenticatedAppSolicitacoesRoute: typeof AuthenticatedAppSolicitacoesRoute
   AuthenticatedAppSolicitarRoute: typeof AuthenticatedAppSolicitarRoute
@@ -276,6 +297,7 @@ interface AuthenticatedAppRouteChildren {
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppBuscarRoute: AuthenticatedAppBuscarRoute,
+  AuthenticatedAppOnboardingRoute: AuthenticatedAppOnboardingRoute,
   AuthenticatedAppPerfilRoute: AuthenticatedAppPerfilRoute,
   AuthenticatedAppSolicitacoesRoute: AuthenticatedAppSolicitacoesRoute,
   AuthenticatedAppSolicitarRoute: AuthenticatedAppSolicitarRoute,
