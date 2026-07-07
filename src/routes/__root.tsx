@@ -13,7 +13,6 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BRAND } from "@/lib/brand";
 import { supabase } from "@/integrations/supabase/client";
-import { useRouter as useTanStackRouter } from "@tanstack/react-router";
 
 function NotFoundComponent() {
   return (
@@ -121,7 +120,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const router = useTanStackRouter();
+  const router = useRouter();
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
