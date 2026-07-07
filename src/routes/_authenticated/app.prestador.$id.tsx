@@ -4,6 +4,7 @@ import { ArrowLeft, Heart, MapPin, Star, MessageSquare, Share2 } from "lucide-re
 import { toast } from "sonner";
 
 import { fetchPrestadorById } from "@/lib/data";
+import { iniciarConversa } from "@/lib/prestador";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -127,7 +128,14 @@ function PrestadorPage() {
       </section>
 
       <div className="sticky bottom-24 mt-8 flex gap-3 px-6">
-        <Button variant="outline" size="lg" className="h-14 flex-1 rounded-2xl">
+        <Button variant="outline" size="lg" className="h-14 flex-1 rounded-2xl"
+          onClick={async () => {
+            if (!user) return;
+            try {
+              const cid = await iniciarConversa(user.id, id, null);
+              navigate({ to: "/app/chat/$id", params: { id: cid } });
+            } catch (e: any) { toast.error(e.message ?? "Erro ao abrir conversa"); }
+          }}>
           <MessageSquare className="h-5 w-5" /> Mensagem
         </Button>
         <Button
