@@ -17,6 +17,7 @@ import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/ap
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAppSolicitarRouteImport } from './routes/_authenticated/app.solicitar'
 import { Route as AuthenticatedAppSolicitacoesRouteImport } from './routes/_authenticated/app.solicitacoes'
+import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authenticated/app.portfolio'
 import { Route as AuthenticatedAppPerfilRouteImport } from './routes/_authenticated/app.perfil'
 import { Route as AuthenticatedAppPainelRouteImport } from './routes/_authenticated/app.painel'
 import { Route as AuthenticatedAppOnboardingRouteImport } from './routes/_authenticated/app.onboarding'
@@ -67,6 +68,12 @@ const AuthenticatedAppSolicitacoesRoute =
   AuthenticatedAppSolicitacoesRouteImport.update({
     id: '/solicitacoes',
     path: '/solicitacoes',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppPortfolioRoute =
+  AuthenticatedAppPortfolioRouteImport.update({
+    id: '/portfolio',
+    path: '/portfolio',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
 const AuthenticatedAppPerfilRoute = AuthenticatedAppPerfilRouteImport.update({
@@ -136,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/painel': typeof AuthenticatedAppPainelRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
+  '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
   '/app/solicitar': typeof AuthenticatedAppSolicitarRoute
   '/app/': typeof AuthenticatedAppIndexRoute
@@ -154,6 +162,7 @@ export interface FileRoutesByTo {
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/painel': typeof AuthenticatedAppPainelRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
+  '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
   '/app/solicitar': typeof AuthenticatedAppSolicitarRoute
   '/app': typeof AuthenticatedAppIndexRoute
@@ -175,6 +184,7 @@ export interface FileRoutesById {
   '/_authenticated/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/_authenticated/app/painel': typeof AuthenticatedAppPainelRoute
   '/_authenticated/app/perfil': typeof AuthenticatedAppPerfilRoute
+  '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/_authenticated/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
   '/_authenticated/app/solicitar': typeof AuthenticatedAppSolicitarRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/app/onboarding'
     | '/app/painel'
     | '/app/perfil'
+    | '/app/portfolio'
     | '/app/solicitacoes'
     | '/app/solicitar'
     | '/app/'
@@ -214,6 +225,7 @@ export interface FileRouteTypes {
     | '/app/onboarding'
     | '/app/painel'
     | '/app/perfil'
+    | '/app/portfolio'
     | '/app/solicitacoes'
     | '/app/solicitar'
     | '/app'
@@ -234,6 +246,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/onboarding'
     | '/_authenticated/app/painel'
     | '/_authenticated/app/perfil'
+    | '/_authenticated/app/portfolio'
     | '/_authenticated/app/solicitacoes'
     | '/_authenticated/app/solicitar'
     | '/_authenticated/app/'
@@ -306,6 +319,13 @@ declare module '@tanstack/react-router' {
       path: '/solicitacoes'
       fullPath: '/app/solicitacoes'
       preLoaderRoute: typeof AuthenticatedAppSolicitacoesRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/portfolio': {
+      id: '/_authenticated/app/portfolio'
+      path: '/portfolio'
+      fullPath: '/app/portfolio'
+      preLoaderRoute: typeof AuthenticatedAppPortfolioRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/perfil': {
@@ -399,6 +419,7 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppOnboardingRoute: typeof AuthenticatedAppOnboardingRoute
   AuthenticatedAppPainelRoute: typeof AuthenticatedAppPainelRoute
   AuthenticatedAppPerfilRoute: typeof AuthenticatedAppPerfilRoute
+  AuthenticatedAppPortfolioRoute: typeof AuthenticatedAppPortfolioRoute
   AuthenticatedAppSolicitacoesRoute: typeof AuthenticatedAppSolicitacoesRoute
   AuthenticatedAppSolicitarRoute: typeof AuthenticatedAppSolicitarRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
@@ -414,6 +435,7 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppOnboardingRoute: AuthenticatedAppOnboardingRoute,
   AuthenticatedAppPainelRoute: AuthenticatedAppPainelRoute,
   AuthenticatedAppPerfilRoute: AuthenticatedAppPerfilRoute,
+  AuthenticatedAppPortfolioRoute: AuthenticatedAppPortfolioRoute,
   AuthenticatedAppSolicitacoesRoute: AuthenticatedAppSolicitacoesRoute,
   AuthenticatedAppSolicitarRoute: AuthenticatedAppSolicitarRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
