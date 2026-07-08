@@ -212,6 +212,9 @@ export type Database = {
           id: string
           prestador_id: string
           solicitacao_id: string | null
+          status_negociacao: string
+          ultima_mensagem_at: string | null
+          ultima_mensagem_texto: string | null
           updated_at: string
         }
         Insert: {
@@ -220,6 +223,9 @@ export type Database = {
           id?: string
           prestador_id: string
           solicitacao_id?: string | null
+          status_negociacao?: string
+          ultima_mensagem_at?: string | null
+          ultima_mensagem_texto?: string | null
           updated_at?: string
         }
         Update: {
@@ -228,6 +234,9 @@ export type Database = {
           id?: string
           prestador_id?: string
           solicitacao_id?: string | null
+          status_negociacao?: string
+          ultima_mensagem_at?: string | null
+          ultima_mensagem_texto?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -338,8 +347,10 @@ export type Database = {
           created_at: string
           id: string
           lida: boolean
+          lida_at: string | null
           remetente_id: string
           texto: string | null
+          tipo: string
         }
         Insert: {
           arquivo_url?: string | null
@@ -347,8 +358,10 @@ export type Database = {
           created_at?: string
           id?: string
           lida?: boolean
+          lida_at?: string | null
           remetente_id: string
           texto?: string | null
+          tipo?: string
         }
         Update: {
           arquivo_url?: string | null
@@ -356,8 +369,10 @@ export type Database = {
           created_at?: string
           id?: string
           lida?: boolean
+          lida_at?: string | null
           remetente_id?: string
           texto?: string | null
+          tipo?: string
         }
         Relationships: [
           {
