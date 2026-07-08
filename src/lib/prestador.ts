@@ -49,11 +49,26 @@ export async function fetchConversasDoUsuario(userId: string, prestadorId: strin
     : `cliente_id.eq.${userId}`;
   const { data, error } = await supabase
     .from("conversas")
-    .select("id, cliente_id, prestador_id, solicitacao_id, updated_at, solicitacoes(titulo), prestadores(profile_id, profiles(nome, foto_url)), cliente:profiles!conversas_cliente_profile_fkey(nome, foto_url)")
+    .select("id, cliente_id, prestador_id, solicitacao_id, updated_at, status_negociacao, ultima_mensagem_texto, ultima_mensagem_at, solicitacoes(titulo), prestadores(profile_id, profiles(nome, foto_url)), cliente:profiles!conversas_cliente_profile_fkey(nome, foto_url)")
     .or(filter)
     .order("updated_at", { ascending: false });
   if (error) throw error;
-  return data ?? [];
+  const rows = data ?? [];
+  if (rows.length === 0) return rows;
+  // Contagem de não lidas por conversa (mensagens recebidas do outro)
+  const ids = rows.map((r: any) => r.id);
+  const { data: unread } = await supabase
+    .from("mensagens")
+    .select("conversa_id, remetente_id, lida")
+    .in("conversa_id", ids)
+    .eq("lida", false);
+  const counts = new Map<string, number>();
+  (unread ?? []).forEach((m: any) => {
+    if (m.remetente_id !== userId) {
+      counts.set(m.conversa_id, (counts.get(m.conversa_id) ?? 0) + 1);
+    }
+  });
+  return rows.map((r: any) => ({ ...r, nao_lidas: counts.get(r.id) ?? 0 }));
 }
 
 export async function iniciarConversa(clienteId: string, prestadorId: string, solicitacaoId: string | null) {

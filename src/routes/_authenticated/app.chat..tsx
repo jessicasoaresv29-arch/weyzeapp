@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/app/chat/$id")({
+export const Route = createFileRoute("/_authenticated/app/chat/")({
   component: ChatConversation,
 });
 
