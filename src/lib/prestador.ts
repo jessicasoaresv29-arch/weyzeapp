@@ -25,7 +25,7 @@ export async function fetchSolicitacoesAbertas(_prestadorId: string, _categoriaI
   // Todo prestador cadastrado vê todas as solicitações abertas.
   const { data, error } = await supabase
     .from("solicitacoes")
-    .select("id, titulo, descricao, cidade, estado, urgencia, valor_estimado, data_servico, created_at, categoria_id, cliente_id, prestador_alvo_id, status, categorias(nome), profiles!solicitacoes_cliente_id_fkey(nome, foto_url)")
+    .select("id, titulo, descricao, cidade, estado, urgencia, valor_estimado, data_servico, created_at, categoria_id, cliente_id, prestador_alvo_id, status, categorias(nome), profiles!solicitacoes_cliente_profile_fkey(nome, foto_url), propostas(id, prestador_id)")
     .in("status", ["aberto", "recebendo_propostas"])
     .order("created_at", { ascending: false })
     .limit(100);
@@ -49,7 +49,7 @@ export async function fetchConversasDoUsuario(userId: string, prestadorId: strin
     : `cliente_id.eq.${userId}`;
   const { data, error } = await supabase
     .from("conversas")
-    .select("id, cliente_id, prestador_id, solicitacao_id, updated_at, solicitacoes(titulo), prestadores(profile_id, profiles(nome, foto_url)), cliente:profiles!conversas_cliente_id_fkey(nome, foto_url)")
+    .select("id, cliente_id, prestador_id, solicitacao_id, updated_at, solicitacoes(titulo), prestadores(profile_id, profiles(nome, foto_url)), cliente:profiles!conversas_cliente_profile_fkey(nome, foto_url)")
     .or(filter)
     .order("updated_at", { ascending: false });
   if (error) throw error;
