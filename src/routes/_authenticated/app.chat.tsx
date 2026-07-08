@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { MessageSquare } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -23,6 +23,7 @@ function formatWhen(iso?: string | null) {
 
 function ChatList() {
   const { user } = useAuth();
+  const location = useLocation();
   const [prestadorId, setPrestadorId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,6 +37,8 @@ function ChatList() {
     queryFn: () => fetchConversasDoUsuario(user!.id, prestadorId),
   });
 
+  const isConversationRoute = location.pathname !== "/app/chat";
+
   // Realtime: refetch quando conversas mudarem (nova msg atualiza updated_at)
   useEffect(() => {
     if (!user) return;
@@ -45,7 +48,11 @@ function ChatList() {
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "mensagens" }, () => q.refetch())
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [user, q]);
+  }, [user, q.refetch]);
+
+  if (isConversationRoute) {
+    return <Outlet />;
+  }
 
   return (
     <div className="flex flex-col gap-4 pb-8">

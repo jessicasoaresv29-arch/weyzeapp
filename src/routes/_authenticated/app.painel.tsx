@@ -1,12 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, MapPin, Clock, ChevronRight, Inbox, Send, CheckCircle2, Wallet, Images, CalendarDays } from "lucide-react";
+import { Loader2, MapPin, Clock, ChevronRight, Inbox, Send, CheckCircle2, Wallet, Images, CalendarDays, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { getMyPrestador, fetchSolicitacoesAbertas, fetchMinhasPropostas } from "@/lib/prestador";
+import { getMyPrestador, fetchSolicitacoesAbertas, fetchMinhasPropostas, abrirConversaDoServico } from "@/lib/prestador";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -120,9 +120,23 @@ function Painel() {
               </div>
               {p.mensagem && <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{p.mensagem}</p>}
               {p.status === "aceita" && (
-                <Link to="/app/chat" className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary">
-                  Abrir chat <ChevronRight className="h-4 w-4" />
-                </Link>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-3 rounded-xl"
+                  onClick={async () => {
+                    try {
+                      const clienteId = p.solicitacoes?.cliente_id;
+                      if (!clienteId) throw new Error("Cliente não encontrado para esta proposta.");
+                      const cid = await abrirConversaDoServico(clienteId, prestador.id, p.solicitacao_id);
+                      navigate({ to: "/app/chat/$id", params: { id: cid } });
+                    } catch (e: any) {
+                      toast.error(e.message ?? "Não foi possível abrir o chat.");
+                    }
+                  }}
+                >
+                  <MessageSquare className="h-4 w-4" /> Abrir chat <ChevronRight className="h-4 w-4" />
+                </Button>
               )}
             </div>
           ))}
