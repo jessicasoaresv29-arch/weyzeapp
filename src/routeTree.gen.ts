@@ -24,6 +24,7 @@ import { Route as AuthenticatedAppOnboardingRouteImport } from './routes/_authen
 import { Route as AuthenticatedAppFinanceiroRouteImport } from './routes/_authenticated/app.financeiro'
 import { Route as AuthenticatedAppChatRouteImport } from './routes/_authenticated/app.chat'
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
+import { Route as AuthenticatedAppAgendaRouteImport } from './routes/_authenticated/app.agenda'
 import { Route as AuthenticatedAppPrestadorIdRouteImport } from './routes/_authenticated/app.prestador.$id'
 import { Route as AuthenticatedAppChatIdRouteImport } from './routes/_authenticated/app.chat.$id'
 import { Route as AuthenticatedAppCategoriaIdRouteImport } from './routes/_authenticated/app.categoria.$id'
@@ -108,6 +109,11 @@ const AuthenticatedAppBuscarRoute = AuthenticatedAppBuscarRouteImport.update({
   path: '/buscar',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppAgendaRoute = AuthenticatedAppAgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedAppPrestadorIdRoute =
   AuthenticatedAppPrestadorIdRouteImport.update({
     id: '/prestador/$id',
@@ -137,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
+  '/app/agenda': typeof AuthenticatedAppAgendaRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/chat': typeof AuthenticatedAppChatRouteWithChildren
   '/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
@@ -156,6 +163,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/app/agenda': typeof AuthenticatedAppAgendaRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/chat': typeof AuthenticatedAppChatRouteWithChildren
   '/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
@@ -178,6 +186,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
+  '/_authenticated/app/agenda': typeof AuthenticatedAppAgendaRoute
   '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/_authenticated/app/chat': typeof AuthenticatedAppChatRouteWithChildren
   '/_authenticated/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
@@ -200,6 +209,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/app'
+    | '/app/agenda'
     | '/app/buscar'
     | '/app/chat'
     | '/app/financeiro'
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/app/agenda'
     | '/app/buscar'
     | '/app/chat'
     | '/app/financeiro'
@@ -240,6 +251,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/_authenticated/app'
+    | '/_authenticated/app/agenda'
     | '/_authenticated/app/buscar'
     | '/_authenticated/app/chat'
     | '/_authenticated/app/financeiro'
@@ -370,6 +382,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppBuscarRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/agenda': {
+      id: '/_authenticated/app/agenda'
+      path: '/agenda'
+      fullPath: '/app/agenda'
+      preLoaderRoute: typeof AuthenticatedAppAgendaRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/prestador/$id': {
       id: '/_authenticated/app/prestador/$id'
       path: '/prestador/$id'
@@ -413,6 +432,7 @@ const AuthenticatedAppChatRouteWithChildren =
   AuthenticatedAppChatRoute._addFileChildren(AuthenticatedAppChatRouteChildren)
 
 interface AuthenticatedAppRouteChildren {
+  AuthenticatedAppAgendaRoute: typeof AuthenticatedAppAgendaRoute
   AuthenticatedAppBuscarRoute: typeof AuthenticatedAppBuscarRoute
   AuthenticatedAppChatRoute: typeof AuthenticatedAppChatRouteWithChildren
   AuthenticatedAppFinanceiroRoute: typeof AuthenticatedAppFinanceiroRoute
@@ -429,6 +449,7 @@ interface AuthenticatedAppRouteChildren {
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
+  AuthenticatedAppAgendaRoute: AuthenticatedAppAgendaRoute,
   AuthenticatedAppBuscarRoute: AuthenticatedAppBuscarRoute,
   AuthenticatedAppChatRoute: AuthenticatedAppChatRouteWithChildren,
   AuthenticatedAppFinanceiroRoute: AuthenticatedAppFinanceiroRoute,
