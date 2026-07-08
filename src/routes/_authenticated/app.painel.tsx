@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, MapPin, Clock, ChevronRight, Inbox, Send, CheckCircle2 } from "lucide-react";
+import { Loader2, MapPin, Clock, ChevronRight, Inbox, Send, CheckCircle2, Wallet, Images, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -76,6 +76,12 @@ function Painel() {
         <Stat icon={Send} label="Propostas" value={propostasQ.data?.length ?? 0} />
       </div>
 
+      <nav className="mx-6 grid grid-cols-3 gap-3">
+        <QuickLink to="/app/financeiro" icon={Wallet} label="Financeiro" />
+        <QuickLink to="/app/portfolio" icon={Images} label="Portfólio" />
+        <QuickLink to="/app/agenda" icon={CalendarDays} label="Agenda" />
+      </nav>
+
       <div className="mx-6 flex gap-2 rounded-full bg-secondary p-1">
         {(["recebidas", "propostas"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)}
@@ -127,6 +133,15 @@ function Stat({ icon: Icon, label, value }: any) {
       <p className="mt-1 text-2xl font-bold">{value}</p>
       <p className="text-xs text-muted-foreground">{label}</p>
     </div>
+  );
+}
+
+function QuickLink({ to, icon: Icon, label }: { to: string; icon: any; label: string }) {
+  return (
+    <Link to={to as never} className="flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-card p-3 shadow-card transition-colors hover:border-primary">
+      <Icon className="h-5 w-5 text-primary" />
+      <span className="text-xs font-semibold">{label}</span>
+    </Link>
   );
 }
 

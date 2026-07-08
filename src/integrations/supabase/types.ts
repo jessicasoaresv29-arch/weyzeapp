@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      agenda: {
+        Row: {
+          created_at: string
+          data: string
+          hora_fim: string | null
+          hora_inicio: string | null
+          id: string
+          observacao: string | null
+          prestador_id: string
+          tipo: string
+        }
+        Insert: {
+          created_at?: string
+          data: string
+          hora_fim?: string | null
+          hora_inicio?: string | null
+          id?: string
+          observacao?: string | null
+          prestador_id: string
+          tipo?: string
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          hora_fim?: string | null
+          hora_inicio?: string | null
+          id?: string
+          observacao?: string | null
+          prestador_id?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agenda_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       avaliacoes: {
         Row: {
           cliente_id: string
@@ -705,11 +746,17 @@ export type Database = {
         }
         Returns: undefined
       }
+      get_prestador_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_prestador: { Args: { _user_id: string }; Returns: boolean }
+      prestador_tem_proposta: {
+        Args: { _solicitacao_id: string; _user_id: string }
         Returns: boolean
       }
     }
