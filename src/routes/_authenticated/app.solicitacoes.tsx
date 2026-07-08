@@ -1,11 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Clock, Check, X } from "lucide-react";
+import { Plus, Clock, Check, X, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { abrirConversaDoServico } from "@/lib/prestador";
 
 export const Route = createFileRoute("/_authenticated/app/solicitacoes")({
   component: Solicitacoes,
@@ -22,6 +23,7 @@ const STATUS_LABEL: Record<string, { text: string; color: string }> = {
 
 function Solicitacoes() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const qc = useQueryClient();
   const q = useQuery({
     queryKey: ["minhas-solicitacoes", user?.id],
@@ -37,11 +39,22 @@ function Solicitacoes() {
     },
   });
 
-  async function responder(propostaId: string, status: "aceita" | "recusada") {
-    const { error } = await supabase.from("propostas").update({ status }).eq("id", propostaId);
+  async function abrirChat(solicitacaoId: string, prestadorId: string) {
+    if (!user) return;
+    try {
+      const cid = await abrirConversaDoServico(user.id, prestadorId, solicitacaoId);
+      navigate({ to: "/app/chat/$id", params: { id: cid } });
+    } catch (e: any) {
+      toast.error(e.message ?? "Não foi possível abrir o chat.");
+    }
+  }
+
+  async function responder(solicitacaoId: string, proposta: any, status: "aceita" | "recusada") {
+    const { error } = await supabase.from("propostas").update({ status }).eq("id", proposta.id);
     if (error) return toast.error(error.message);
-    toast.success(status === "aceita" ? "Proposta aceita! Chat liberado." : "Proposta recusada.");
+    toast.success(status === "aceita" ? "Proposta aceita! Abrindo chat." : "Proposta recusada.");
     qc.invalidateQueries({ queryKey: ["minhas-solicitacoes"] });
+    if (status === "aceita") await abrirChat(solicitacaoId, proposta.prestador_id);
   }
 
   return (
@@ -70,7 +83,7 @@ function Solicitacoes() {
         ) : (
           (q.data ?? []).map((s: any) => {
             const st = STATUS_LABEL[s.status] ?? STATUS_LABEL.aberto;
-            const propostas = (s.propostas ?? []).filter((p: any) => p.status === "enviada");
+            const propostas = (s.propostas ?? []).filter((p: any) => p.status === "enviada" || p.status === "aceita");
             return (
               <div key={s.id} className="rounded-2xl border border-border bg-card p-4 shadow-card">
                 <div className="flex items-start justify-between gap-3">
@@ -93,8 +106,16 @@ function Solicitacoes() {
                         </div>
                         {p.mensagem && <p className="mt-1 text-xs text-muted-foreground">{p.mensagem}</p>}
                         <div className="mt-2 flex gap-2">
-                          <Button size="sm" onClick={() => responder(p.id, "aceita")} className="flex-1 rounded-lg bg-success text-success-foreground hover:bg-success/90"><Check className="h-4 w-4" /> Aceitar</Button>
-                          <Button size="sm" variant="outline" onClick={() => responder(p.id, "recusada")} className="rounded-lg"><X className="h-4 w-4" /></Button>
+                          {p.status === "aceita" ? (
+                            <Button size="sm" onClick={() => abrirChat(s.id, p.prestador_id)} className="flex-1 rounded-lg bg-success text-success-foreground hover:bg-success/90">
+                              <MessageSquare className="h-4 w-4" /> Abrir chat
+                            </Button>
+                          ) : (
+                            <>
+                              <Button size="sm" onClick={() => responder(s.id, p, "aceita")} className="flex-1 rounded-lg bg-success text-success-foreground hover:bg-success/90"><Check className="h-4 w-4" /> Aceitar</Button>
+                              <Button size="sm" variant="outline" onClick={() => responder(s.id, p, "recusada")} className="rounded-lg"><X className="h-4 w-4" /></Button>
+                            </>
+                          )}
                         </div>
                       </div>
                     ))}

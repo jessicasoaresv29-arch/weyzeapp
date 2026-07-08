@@ -84,3 +84,33 @@ export async function iniciarConversa(clienteId: string, prestadorId: string, so
   if (error) throw error;
   return data.id;
 }
+
+export async function abrirConversaDoServico(clienteId: string, prestadorId: string, solicitacaoId: string) {
+  const findExisting = async () => {
+    const { data, error } = await supabase
+      .from("conversas")
+      .select("id")
+      .eq("cliente_id", clienteId)
+      .eq("prestador_id", prestadorId)
+      .eq("solicitacao_id", solicitacaoId)
+      .maybeSingle();
+    if (error) throw error;
+    return data?.id ?? null;
+  };
+
+  const existing = await findExisting();
+  if (existing) return existing;
+
+  const { data, error } = await supabase
+    .from("conversas")
+    .insert({ cliente_id: clienteId, prestador_id: prestadorId, solicitacao_id: solicitacaoId })
+    .select("id")
+    .single();
+
+  if (error?.code === "23505") {
+    const retry = await findExisting();
+    if (retry) return retry;
+  }
+  if (error) throw error;
+  return data.id;
+}
