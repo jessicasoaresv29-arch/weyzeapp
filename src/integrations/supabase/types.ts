@@ -85,6 +85,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "avaliacoes_cliente_profile_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "avaliacoes_contrato_id_fkey"
             columns: ["contrato_id"]
             isOneToOne: false
@@ -169,6 +176,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "contratos_cliente_profile_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "contratos_prestador_id_fkey"
             columns: ["prestador_id"]
             isOneToOne: false
@@ -217,6 +231,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "conversas_cliente_profile_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "conversas_prestador_id_fkey"
             columns: ["prestador_id"]
@@ -295,6 +316,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "favoritos_cliente_profile_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "favoritos_prestador_id_fkey"
             columns: ["prestador_id"]
             isOneToOne: false
@@ -339,6 +367,13 @@ export type Database = {
             referencedRelation: "conversas"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "mensagens_remetente_profile_fkey"
+            columns: ["remetente_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       notificacoes: {
@@ -372,7 +407,15 @@ export type Database = {
           titulo?: string
           usuario_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notificacoes_usuario_profile_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pesquisas_ia: {
         Row: {
@@ -699,6 +742,13 @@ export type Database = {
             columns: ["categoria_id"]
             isOneToOne: false
             referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "solicitacoes_cliente_profile_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
