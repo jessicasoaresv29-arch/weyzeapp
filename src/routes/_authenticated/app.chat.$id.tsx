@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Send, Loader2 } from "lucide-react";
+import { ArrowLeft, Send, Loader2, MessageSquareWarning } from "lucide-react";
+import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -23,45 +24,88 @@ function ChatConversation() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const convQ = useQuery({
-    queryKey: ["conversa", id], enabled: !!id,
+    queryKey: ["conversa", id], enabled: !!id && !!user,
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("conversas")
         .select("id, cliente_id, prestador_id, solicitacao_id, solicitacoes(titulo), prestadores(profile_id, profiles(nome, foto_url)), cliente:profiles!conversas_cliente_profile_fkey(nome, foto_url)")
         .eq("id", id).maybeSingle();
+      if (error) throw error;
       return data;
     },
   });
 
   useEffect(() => {
+    if (!id || !user) return;
     let mounted = true;
     (async () => {
-      const { data } = await supabase.from("mensagens").select("*").eq("conversa_id", id).order("created_at");
+      const { data, error } = await supabase.from("mensagens").select("*").eq("conversa_id", id).order("created_at");
+      if (error) {
+        toast.error("Não foi possível carregar as mensagens.");
+        return;
+      }
       if (mounted) setMessages((data ?? []) as Msg[]);
     })();
     const channel = supabase.channel(`msg-${id}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "mensagens", filter: `conversa_id=eq.${id}` }, (payload) => {
-        setMessages((prev) => [...prev, payload.new as Msg]);
+        const next = payload.new as Msg;
+        setMessages((prev) => prev.some((m) => m.id === next.id) ? prev : [...prev, next]);
       })
-      .subscribe();
+      .subscribe((status) => {
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          toast.error("Conexão do chat instável. Tentando sincronizar novamente.");
+        }
+      });
     return () => { mounted = false; supabase.removeChannel(channel); };
-  }, [id]);
+  }, [id, user]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages.length]);
 
   async function send(e: React.FormEvent) {
     e.preventDefault();
     if (!text.trim() || !user) return;
+    const messageText = text.trim();
     setSending(true);
-    const { error } = await supabase.from("mensagens").insert({ conversa_id: id, remetente_id: user.id, texto: text.trim() });
+    const { data, error } = await supabase
+      .from("mensagens")
+      .insert({ conversa_id: id, remetente_id: user.id, texto: messageText, tipo: "texto" })
+      .select("id, conversa_id, remetente_id, texto, created_at")
+      .single();
     setSending(false);
-    if (error) return;
+    if (error) {
+      toast.error(error.message || "Não foi possível enviar a mensagem.");
+      return;
+    }
+    if (data) {
+      setMessages((prev) => prev.some((m) => m.id === data.id) ? prev : [...prev, data as Msg]);
+    }
     setText("");
   }
 
   const conv: any = convQ.data;
   const isCliente = conv?.cliente_id === user?.id;
   const other = isCliente ? conv?.prestadores?.profiles : conv?.cliente;
+
+  if (convQ.isLoading) {
+    return (
+      <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (convQ.isError || !conv) {
+    return (
+      <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-3 px-6 text-center">
+        <MessageSquareWarning className="h-10 w-10 text-muted-foreground" />
+        <p className="font-semibold">Não foi possível abrir esta conversa.</p>
+        <p className="text-sm text-muted-foreground">Volte para a lista de conversas e tente novamente.</p>
+        <Button asChild variant="outline" className="rounded-xl">
+          <Link to="/app/chat">Voltar ao chat</Link>
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col">
