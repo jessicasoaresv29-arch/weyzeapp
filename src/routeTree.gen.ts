@@ -29,7 +29,6 @@ import { Route as AuthenticatedAppPrestadorIdRouteImport } from './routes/_authe
 import { Route as AuthenticatedAppChatIdRouteImport } from './routes/_authenticated/app.chat.$id'
 import { Route as AuthenticatedAppCategoriaIdRouteImport } from './routes/_authenticated/app.categoria.$id'
 import { Route as AuthenticatedAppAvaliarContratoIdRouteImport } from './routes/_authenticated/app.avaliar.$contratoId'
-import { Route as AuthenticatedAppChatRouteImport } from './routes/_authenticated/app.chat.'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -138,11 +137,6 @@ const AuthenticatedAppAvaliarContratoIdRoute =
     path: '/avaliar/$contratoId',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
-const AuthenticatedAppChatRoute = AuthenticatedAppChatRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthenticatedAppChatRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -160,7 +154,6 @@ export interface FileRoutesByFullPath {
   '/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
   '/app/solicitar': typeof AuthenticatedAppSolicitarRoute
   '/app/': typeof AuthenticatedAppIndexRoute
-  '/app/chat/': typeof AuthenticatedAppChatRoute
   '/app/avaliar/$contratoId': typeof AuthenticatedAppAvaliarContratoIdRoute
   '/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
@@ -172,6 +165,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/app/agenda': typeof AuthenticatedAppAgendaRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/app/chat': typeof AuthenticatedAppChatRouteWithChildren
   '/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/painel': typeof AuthenticatedAppPainelRoute
@@ -180,7 +174,6 @@ export interface FileRoutesByTo {
   '/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
   '/app/solicitar': typeof AuthenticatedAppSolicitarRoute
   '/app': typeof AuthenticatedAppIndexRoute
-  '/app/chat': typeof AuthenticatedAppChatRoute
   '/app/avaliar/$contratoId': typeof AuthenticatedAppAvaliarContratoIdRoute
   '/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
@@ -204,7 +197,6 @@ export interface FileRoutesById {
   '/_authenticated/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
   '/_authenticated/app/solicitar': typeof AuthenticatedAppSolicitarRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
-  '/_authenticated/app/chat/': typeof AuthenticatedAppChatRoute
   '/_authenticated/app/avaliar/$contratoId': typeof AuthenticatedAppAvaliarContratoIdRoute
   '/_authenticated/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
   '/_authenticated/app/chat/$id': typeof AuthenticatedAppChatIdRoute
@@ -228,7 +220,6 @@ export interface FileRouteTypes {
     | '/app/solicitacoes'
     | '/app/solicitar'
     | '/app/'
-    | '/app/chat/'
     | '/app/avaliar/$contratoId'
     | '/app/categoria/$id'
     | '/app/chat/$id'
@@ -240,6 +231,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/app/agenda'
     | '/app/buscar'
+    | '/app/chat'
     | '/app/financeiro'
     | '/app/onboarding'
     | '/app/painel'
@@ -248,7 +240,6 @@ export interface FileRouteTypes {
     | '/app/solicitacoes'
     | '/app/solicitar'
     | '/app'
-    | '/app/chat'
     | '/app/avaliar/$contratoId'
     | '/app/categoria/$id'
     | '/app/chat/$id'
@@ -271,7 +262,6 @@ export interface FileRouteTypes {
     | '/_authenticated/app/solicitacoes'
     | '/_authenticated/app/solicitar'
     | '/_authenticated/app/'
-    | '/_authenticated/app/chat/'
     | '/_authenticated/app/avaliar/$contratoId'
     | '/_authenticated/app/categoria/$id'
     | '/_authenticated/app/chat/$id'
@@ -427,23 +417,14 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppAvaliarContratoIdRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
-    '/_authenticated/app/chat/': {
-      id: '/_authenticated/app/chat/'
-      path: '/'
-      fullPath: '/app/chat/'
-      preLoaderRoute: typeof AuthenticatedAppChatRouteImport
-      parentRoute: typeof AuthenticatedAppChatRoute
-    }
   }
 }
 
 interface AuthenticatedAppChatRouteChildren {
-  AuthenticatedAppChatRoute: typeof AuthenticatedAppChatRoute
   AuthenticatedAppChatIdRoute: typeof AuthenticatedAppChatIdRoute
 }
 
 const AuthenticatedAppChatRouteChildren: AuthenticatedAppChatRouteChildren = {
-  AuthenticatedAppChatRoute: AuthenticatedAppChatRoute,
   AuthenticatedAppChatIdRoute: AuthenticatedAppChatIdRoute,
 }
 
