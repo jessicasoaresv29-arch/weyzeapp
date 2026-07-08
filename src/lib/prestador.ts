@@ -21,16 +21,14 @@ export async function ensurePrestador(userId: string) {
   return data;
 }
 
-export async function fetchSolicitacoesAbertas(prestadorId: string, categoriaIds: string[]) {
-  // Direcionadas OU abertas em categorias do prestador
-  const cats = categoriaIds.length ? categoriaIds : ["00000000-0000-0000-0000-000000000000"];
+export async function fetchSolicitacoesAbertas(_prestadorId: string, _categoriaIds: string[]) {
+  // Todo prestador cadastrado vê todas as solicitações abertas.
   const { data, error } = await supabase
     .from("solicitacoes")
     .select("id, titulo, descricao, cidade, estado, urgencia, valor_estimado, data_servico, created_at, categoria_id, cliente_id, prestador_alvo_id, status, categorias(nome), profiles!solicitacoes_cliente_id_fkey(nome, foto_url)")
     .in("status", ["aberto", "recebendo_propostas"])
-    .or(`prestador_alvo_id.eq.${prestadorId},categoria_id.in.(${cats.join(",")})`)
     .order("created_at", { ascending: false })
-    .limit(50);
+    .limit(100);
   if (error) throw error;
   return data ?? [];
 }
