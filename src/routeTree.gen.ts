@@ -20,6 +20,7 @@ import { Route as AuthenticatedAppSolicitacoesRouteImport } from './routes/_auth
 import { Route as AuthenticatedAppPerfilRouteImport } from './routes/_authenticated/app.perfil'
 import { Route as AuthenticatedAppPainelRouteImport } from './routes/_authenticated/app.painel'
 import { Route as AuthenticatedAppOnboardingRouteImport } from './routes/_authenticated/app.onboarding'
+import { Route as AuthenticatedAppFinanceiroRouteImport } from './routes/_authenticated/app.financeiro'
 import { Route as AuthenticatedAppChatRouteImport } from './routes/_authenticated/app.chat'
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
 import { Route as AuthenticatedAppPrestadorIdRouteImport } from './routes/_authenticated/app.prestador.$id'
@@ -84,6 +85,12 @@ const AuthenticatedAppOnboardingRoute =
     path: '/onboarding',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppFinanceiroRoute =
+  AuthenticatedAppFinanceiroRouteImport.update({
+    id: '/financeiro',
+    path: '/financeiro',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppChatRoute = AuthenticatedAppChatRouteImport.update({
   id: '/chat',
   path: '/chat',
@@ -125,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/chat': typeof AuthenticatedAppChatRouteWithChildren
+  '/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/painel': typeof AuthenticatedAppPainelRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
@@ -142,6 +150,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/chat': typeof AuthenticatedAppChatRouteWithChildren
+  '/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/painel': typeof AuthenticatedAppPainelRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
@@ -162,6 +171,7 @@ export interface FileRoutesById {
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/_authenticated/app/chat': typeof AuthenticatedAppChatRouteWithChildren
+  '/_authenticated/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
   '/_authenticated/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/_authenticated/app/painel': typeof AuthenticatedAppPainelRoute
   '/_authenticated/app/perfil': typeof AuthenticatedAppPerfilRoute
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/app/buscar'
     | '/app/chat'
+    | '/app/financeiro'
     | '/app/onboarding'
     | '/app/painel'
     | '/app/perfil'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/app/buscar'
     | '/app/chat'
+    | '/app/financeiro'
     | '/app/onboarding'
     | '/app/painel'
     | '/app/perfil'
@@ -218,6 +230,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app'
     | '/_authenticated/app/buscar'
     | '/_authenticated/app/chat'
+    | '/_authenticated/app/financeiro'
     | '/_authenticated/app/onboarding'
     | '/_authenticated/app/painel'
     | '/_authenticated/app/perfil'
@@ -316,6 +329,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppOnboardingRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/financeiro': {
+      id: '/_authenticated/app/financeiro'
+      path: '/financeiro'
+      fullPath: '/app/financeiro'
+      preLoaderRoute: typeof AuthenticatedAppFinanceiroRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/chat': {
       id: '/_authenticated/app/chat'
       path: '/chat'
@@ -375,6 +395,7 @@ const AuthenticatedAppChatRouteWithChildren =
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppBuscarRoute: typeof AuthenticatedAppBuscarRoute
   AuthenticatedAppChatRoute: typeof AuthenticatedAppChatRouteWithChildren
+  AuthenticatedAppFinanceiroRoute: typeof AuthenticatedAppFinanceiroRoute
   AuthenticatedAppOnboardingRoute: typeof AuthenticatedAppOnboardingRoute
   AuthenticatedAppPainelRoute: typeof AuthenticatedAppPainelRoute
   AuthenticatedAppPerfilRoute: typeof AuthenticatedAppPerfilRoute
@@ -389,6 +410,7 @@ interface AuthenticatedAppRouteChildren {
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppBuscarRoute: AuthenticatedAppBuscarRoute,
   AuthenticatedAppChatRoute: AuthenticatedAppChatRouteWithChildren,
+  AuthenticatedAppFinanceiroRoute: AuthenticatedAppFinanceiroRoute,
   AuthenticatedAppOnboardingRoute: AuthenticatedAppOnboardingRoute,
   AuthenticatedAppPainelRoute: AuthenticatedAppPainelRoute,
   AuthenticatedAppPerfilRoute: AuthenticatedAppPerfilRoute,
