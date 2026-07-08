@@ -96,7 +96,13 @@ function Painel() {
           {abertasQ.isLoading ? <Skel /> : (abertasQ.data ?? []).length === 0 ? (
             <Empty title="Nenhuma solicitação aberta" hint="Configure suas categorias para receber pedidos compatíveis." />
           ) : abertasQ.data!.map((s: any) => (
-            <SolicitacaoCard key={s.id} s={s} prestadorId={prestador.id} onDone={() => { abertasQ.refetch(); propostasQ.refetch(); }} />
+            <SolicitacaoCard
+              key={s.id}
+              s={s}
+              prestadorId={prestador.id}
+              jaEnviou={(s.propostas ?? []).some((p: any) => p.prestador_id === prestador.id)}
+              onDone={() => { abertasQ.refetch(); propostasQ.refetch(); }}
+            />
           ))}
         </section>
       ) : (
@@ -160,7 +166,7 @@ function StatusBadge({ status }: { status: string }) {
   return <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${m.cls}`}>{m.text}</span>;
 }
 
-function SolicitacaoCard({ s, prestadorId, onDone }: { s: any; prestadorId: string; onDone: () => void }) {
+function SolicitacaoCard({ s, prestadorId, jaEnviou, onDone }: { s: any; prestadorId: string; jaEnviou: boolean; onDone: () => void }) {
   const [valor, setValor] = useState("");
   const [prazo, setPrazo] = useState("");
   const [mensagem, setMensagem] = useState("");
@@ -175,7 +181,10 @@ function SolicitacaoCard({ s, prestadorId, onDone }: { s: any; prestadorId: stri
       valor: Number(valor), prazo_dias: prazo ? Number(prazo) : null, mensagem,
     });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      if (error.code === "23505") return toast.error("Você já enviou uma proposta para essa solicitação.");
+      return toast.error(error.message);
+    }
     toast.success("Proposta enviada!");
     setOpen(false); onDone();
   }
@@ -198,6 +207,11 @@ function SolicitacaoCard({ s, prestadorId, onDone }: { s: any; prestadorId: stri
         <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{new Date(s.created_at).toLocaleDateString("pt-BR")}</span>
       </div>
       <div className="mt-3 flex gap-2">
+        {jaEnviou ? (
+          <Button size="sm" disabled variant="outline" className="flex-1 rounded-xl">
+            <CheckCircle2 className="h-4 w-4" /> Proposta enviada
+          </Button>
+        ) : (
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button size="sm" className="flex-1 rounded-xl bg-success text-success-foreground hover:bg-success/90">Enviar proposta</Button>
@@ -214,6 +228,7 @@ function SolicitacaoCard({ s, prestadorId, onDone }: { s: any; prestadorId: stri
             </div>
           </DialogContent>
         </Dialog>
+        )}
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ function ChatConversation() {
     queryFn: async () => {
       const { data } = await supabase
         .from("conversas")
-        .select("id, cliente_id, prestador_id, solicitacao_id, solicitacoes(titulo), prestadores(profile_id, profiles(nome, foto_url)), cliente:profiles!conversas_cliente_id_fkey(nome, foto_url)")
+        .select("id, cliente_id, prestador_id, solicitacao_id, solicitacoes(titulo), prestadores(profile_id, profiles(nome, foto_url)), cliente:profiles!conversas_cliente_profile_fkey(nome, foto_url)")
         .eq("id", id).maybeSingle();
       return data;
     },
