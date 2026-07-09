@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Heart, MapPin, Star, MessageSquare, Share2 } from "lucide-react";
+import { ArrowLeft, Heart, MapPin, Star, MessageSquare, Share2, Phone } from "lucide-react";
 import { toast } from "sonner";
 
 import { fetchPrestadorById } from "@/lib/data";
@@ -112,6 +112,31 @@ function PrestadorPage() {
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4" /> {profile.cidade}{profile.estado ? `, ${profile.estado}` : ""}
             {p.atende_domicilio && ` · Atende domicílio (${p.raio_atendimento_km ?? 20}km)`}
+          </div>
+        )}
+
+        {profile?.telefone && (
+          <div>
+            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Contato</h2>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <a
+                href={`https://wa.me/${String(profile.telefone).replace(/\D/g, "")}?text=${encodeURIComponent(`Olá ${profile.nome ?? ""}, encontrei seu perfil no Weyze e gostaria de contratar um serviço.`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-card active:scale-[0.98]"
+              >
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
+                  <path d="M20.52 3.48A11.87 11.87 0 0 0 12.06 0C5.5 0 .17 5.33.17 11.9a11.8 11.8 0 0 0 1.6 5.94L0 24l6.34-1.66a11.9 11.9 0 0 0 5.72 1.46h.01c6.55 0 11.89-5.33 11.89-11.9a11.83 11.83 0 0 0-3.44-8.42Zm-8.46 18.3h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.76.98 1-3.67-.24-.38a9.83 9.83 0 0 1-1.51-5.22c0-5.44 4.43-9.87 9.88-9.87 2.64 0 5.12 1.03 6.98 2.9a9.8 9.8 0 0 1 2.9 6.98c0 5.44-4.43 9.87-9.85 9.87Zm5.4-7.4c-.29-.14-1.75-.86-2.02-.96-.27-.1-.47-.14-.66.15-.2.29-.76.96-.93 1.16-.17.2-.34.22-.63.07-.29-.14-1.24-.46-2.36-1.46-.87-.78-1.46-1.74-1.63-2.03-.17-.29-.02-.45.12-.6.13-.13.29-.34.44-.51.15-.17.2-.29.29-.49.1-.2.05-.37-.02-.51-.07-.14-.66-1.6-.9-2.19-.24-.57-.48-.5-.66-.51h-.57c-.2 0-.51.07-.78.37-.27.29-1.02 1-1.02 2.44 0 1.44 1.05 2.83 1.2 3.02.15.2 2.07 3.16 5.02 4.43.7.3 1.25.48 1.68.62.7.22 1.34.19 1.84.11.56-.08 1.75-.72 2-1.42.25-.7.25-1.29.18-1.42-.07-.13-.27-.2-.56-.34Z"/>
+                </svg>
+                WhatsApp
+              </a>
+              <a
+                href={`tel:${String(profile.telefone).replace(/\s/g, "")}`}
+                className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground active:scale-[0.98]"
+              >
+                <Phone className="h-4 w-4" /> {profile.telefone}
+              </a>
+            </div>
           </div>
         )}
 
