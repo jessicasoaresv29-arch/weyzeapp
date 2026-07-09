@@ -798,7 +798,55 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      avaliacoes_publicas: {
+        Row: {
+          cliente_id: string | null
+          contrato_id: string | null
+          created_at: string | null
+          id: string | null
+          nota: number | null
+          prestador_id: string | null
+        }
+        Insert: {
+          cliente_id?: string | null
+          contrato_id?: string | null
+          created_at?: string | null
+          id?: string | null
+          nota?: number | null
+          prestador_id?: string | null
+        }
+        Update: {
+          cliente_id?: string | null
+          contrato_id?: string | null
+          created_at?: string | null
+          id?: string | null
+          nota?: number | null
+          prestador_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avaliacoes_cliente_profile_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avaliacoes_contrato_id_fkey"
+            columns: ["contrato_id"]
+            isOneToOne: false
+            referencedRelation: "contratos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avaliacoes_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       criar_notificacao: {
