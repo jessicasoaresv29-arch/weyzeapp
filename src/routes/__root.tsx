@@ -87,6 +87,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: BRAND.tagline },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { title: "Weyze-app" },
+      { property: "og:title", content: "Weyze-app" },
+      { name: "twitter:title", content: "Weyze-app" },
+      { name: "description", content: "O novo modelo de serviços." },
+      { property: "og:description", content: "O novo modelo de serviços." },
+      { name: "twitter:description", content: "O novo modelo de serviços." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/e6Ek0WewHBa1jy6YdHCQ607VLD03/social-images/social-1783601814852-2AEB893E-4FAC-4C08-9457-9D563B48900C_(1).webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/e6Ek0WewHBa1jy6YdHCQ607VLD03/social-images/social-1783601814852-2AEB893E-4FAC-4C08-9457-9D563B48900C_(1).webp" },
     ],
     links: [
       {
