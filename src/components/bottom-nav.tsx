@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Search, Inbox, User, MessageSquare, LayoutDashboard } from "lucide-react";
+import { Home, Search, Inbox, User, MessageSquare, LayoutDashboard, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -13,7 +13,7 @@ const clienteItems: Item[] = [
 ];
 const prestadorItems: Item[] = [
   { to: "/app/painel", label: "Painel", icon: LayoutDashboard },
-  { to: "/app/buscar", label: "Explorar", icon: Search },
+  { to: "/app/carteira", label: "Carteira", icon: Wallet },
   { to: "/app/chat", label: "Chat", icon: MessageSquare },
   { to: "/app/perfil", label: "Perfil", icon: User },
 ];
