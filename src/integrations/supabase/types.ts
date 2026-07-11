@@ -875,8 +875,27 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderador" | "usuario"
-      status_contrato: "ativo" | "concluido" | "cancelado"
+      forma_pagamento: "pix" | "credito" | "debito" | "dinheiro"
+      status_contrato:
+        | "ativo"
+        | "concluido"
+        | "cancelado"
+        | "em_andamento"
+        | "aguardando_confirmacao_cliente"
+        | "aguardando_pagamento"
+        | "pago"
+        | "disputado"
       status_documento: "pendente" | "aprovado" | "recusado"
+      status_pagamento:
+        | "aguardando_pagamento"
+        | "pendente"
+        | "aprovado"
+        | "recusado"
+        | "dinheiro_pendente"
+        | "concluido"
+        | "em_analise"
+        | "estornado"
+        | "cancelado"
       status_proposta: "enviada" | "aceita" | "recusada" | "cancelada"
       status_solicitacao:
         | "aberto"
@@ -885,6 +904,12 @@ export type Database = {
         | "em_andamento"
         | "concluido"
         | "cancelado"
+      tipo_transacao_carteira:
+        | "credito"
+        | "debito"
+        | "saque"
+        | "estorno"
+        | "ajuste"
       tipo_usuario: "cliente" | "prestador"
       urgencia: "baixa" | "media" | "alta"
     }
@@ -1015,8 +1040,29 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderador", "usuario"],
-      status_contrato: ["ativo", "concluido", "cancelado"],
+      forma_pagamento: ["pix", "credito", "debito", "dinheiro"],
+      status_contrato: [
+        "ativo",
+        "concluido",
+        "cancelado",
+        "em_andamento",
+        "aguardando_confirmacao_cliente",
+        "aguardando_pagamento",
+        "pago",
+        "disputado",
+      ],
       status_documento: ["pendente", "aprovado", "recusado"],
+      status_pagamento: [
+        "aguardando_pagamento",
+        "pendente",
+        "aprovado",
+        "recusado",
+        "dinheiro_pendente",
+        "concluido",
+        "em_analise",
+        "estornado",
+        "cancelado",
+      ],
       status_proposta: ["enviada", "aceita", "recusada", "cancelada"],
       status_solicitacao: [
         "aberto",
@@ -1025,6 +1071,13 @@ export const Constants = {
         "em_andamento",
         "concluido",
         "cancelado",
+      ],
+      tipo_transacao_carteira: [
+        "credito",
+        "debito",
+        "saque",
+        "estorno",
+        "ajuste",
       ],
       tipo_usuario: ["cliente", "prestador"],
       urgencia: ["baixa", "media", "alta"],
