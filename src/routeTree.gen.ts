@@ -23,9 +23,11 @@ import { Route as AuthenticatedAppPainelRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAppOnboardingRouteImport } from './routes/_authenticated/app.onboarding'
 import { Route as AuthenticatedAppFinanceiroRouteImport } from './routes/_authenticated/app.financeiro'
 import { Route as AuthenticatedAppChatRouteImport } from './routes/_authenticated/app.chat'
+import { Route as AuthenticatedAppCarteiraRouteImport } from './routes/_authenticated/app.carteira'
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
 import { Route as AuthenticatedAppAgendaRouteImport } from './routes/_authenticated/app.agenda'
 import { Route as AuthenticatedAppPrestadorIdRouteImport } from './routes/_authenticated/app.prestador.$id'
+import { Route as AuthenticatedAppPagamentoContratoIdRouteImport } from './routes/_authenticated/app.pagamento.$contratoId'
 import { Route as AuthenticatedAppChatIdRouteImport } from './routes/_authenticated/app.chat.$id'
 import { Route as AuthenticatedAppCategoriaIdRouteImport } from './routes/_authenticated/app.categoria.$id'
 import { Route as AuthenticatedAppAvaliarContratoIdRouteImport } from './routes/_authenticated/app.avaliar.$contratoId'
@@ -104,6 +106,12 @@ const AuthenticatedAppChatRoute = AuthenticatedAppChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppCarteiraRoute =
+  AuthenticatedAppCarteiraRouteImport.update({
+    id: '/carteira',
+    path: '/carteira',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppBuscarRoute = AuthenticatedAppBuscarRouteImport.update({
   id: '/buscar',
   path: '/buscar',
@@ -118,6 +126,12 @@ const AuthenticatedAppPrestadorIdRoute =
   AuthenticatedAppPrestadorIdRouteImport.update({
     id: '/prestador/$id',
     path: '/prestador/$id',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppPagamentoContratoIdRoute =
+  AuthenticatedAppPagamentoContratoIdRouteImport.update({
+    id: '/pagamento/$contratoId',
+    path: '/pagamento/$contratoId',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
 const AuthenticatedAppChatIdRoute = AuthenticatedAppChatIdRouteImport.update({
@@ -145,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/app/agenda': typeof AuthenticatedAppAgendaRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/app/chat': typeof AuthenticatedAppChatRouteWithChildren
   '/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
@@ -157,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/app/avaliar/$contratoId': typeof AuthenticatedAppAvaliarContratoIdRoute
   '/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
+  '/app/pagamento/$contratoId': typeof AuthenticatedAppPagamentoContratoIdRoute
   '/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
 }
 export interface FileRoutesByTo {
@@ -165,6 +181,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/app/agenda': typeof AuthenticatedAppAgendaRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/app/chat': typeof AuthenticatedAppChatRouteWithChildren
   '/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
@@ -177,6 +194,7 @@ export interface FileRoutesByTo {
   '/app/avaliar/$contratoId': typeof AuthenticatedAppAvaliarContratoIdRoute
   '/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
+  '/app/pagamento/$contratoId': typeof AuthenticatedAppPagamentoContratoIdRoute
   '/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
 }
 export interface FileRoutesById {
@@ -188,6 +206,7 @@ export interface FileRoutesById {
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/app/agenda': typeof AuthenticatedAppAgendaRoute
   '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/_authenticated/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/_authenticated/app/chat': typeof AuthenticatedAppChatRouteWithChildren
   '/_authenticated/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
   '/_authenticated/app/onboarding': typeof AuthenticatedAppOnboardingRoute
@@ -200,6 +219,7 @@ export interface FileRoutesById {
   '/_authenticated/app/avaliar/$contratoId': typeof AuthenticatedAppAvaliarContratoIdRoute
   '/_authenticated/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
   '/_authenticated/app/chat/$id': typeof AuthenticatedAppChatIdRoute
+  '/_authenticated/app/pagamento/$contratoId': typeof AuthenticatedAppPagamentoContratoIdRoute
   '/_authenticated/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
 }
 export interface FileRouteTypes {
@@ -211,6 +231,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/app/agenda'
     | '/app/buscar'
+    | '/app/carteira'
     | '/app/chat'
     | '/app/financeiro'
     | '/app/onboarding'
@@ -223,6 +244,7 @@ export interface FileRouteTypes {
     | '/app/avaliar/$contratoId'
     | '/app/categoria/$id'
     | '/app/chat/$id'
+    | '/app/pagamento/$contratoId'
     | '/app/prestador/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -231,6 +253,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/app/agenda'
     | '/app/buscar'
+    | '/app/carteira'
     | '/app/chat'
     | '/app/financeiro'
     | '/app/onboarding'
@@ -243,6 +266,7 @@ export interface FileRouteTypes {
     | '/app/avaliar/$contratoId'
     | '/app/categoria/$id'
     | '/app/chat/$id'
+    | '/app/pagamento/$contratoId'
     | '/app/prestador/$id'
   id:
     | '__root__'
@@ -253,6 +277,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app'
     | '/_authenticated/app/agenda'
     | '/_authenticated/app/buscar'
+    | '/_authenticated/app/carteira'
     | '/_authenticated/app/chat'
     | '/_authenticated/app/financeiro'
     | '/_authenticated/app/onboarding'
@@ -265,6 +290,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/avaliar/$contratoId'
     | '/_authenticated/app/categoria/$id'
     | '/_authenticated/app/chat/$id'
+    | '/_authenticated/app/pagamento/$contratoId'
     | '/_authenticated/app/prestador/$id'
   fileRoutesById: FileRoutesById
 }
@@ -375,6 +401,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppChatRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/carteira': {
+      id: '/_authenticated/app/carteira'
+      path: '/carteira'
+      fullPath: '/app/carteira'
+      preLoaderRoute: typeof AuthenticatedAppCarteiraRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/buscar': {
       id: '/_authenticated/app/buscar'
       path: '/buscar'
@@ -394,6 +427,13 @@ declare module '@tanstack/react-router' {
       path: '/prestador/$id'
       fullPath: '/app/prestador/$id'
       preLoaderRoute: typeof AuthenticatedAppPrestadorIdRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/pagamento/$contratoId': {
+      id: '/_authenticated/app/pagamento/$contratoId'
+      path: '/pagamento/$contratoId'
+      fullPath: '/app/pagamento/$contratoId'
+      preLoaderRoute: typeof AuthenticatedAppPagamentoContratoIdRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/chat/$id': {
@@ -434,6 +474,7 @@ const AuthenticatedAppChatRouteWithChildren =
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppAgendaRoute: typeof AuthenticatedAppAgendaRoute
   AuthenticatedAppBuscarRoute: typeof AuthenticatedAppBuscarRoute
+  AuthenticatedAppCarteiraRoute: typeof AuthenticatedAppCarteiraRoute
   AuthenticatedAppChatRoute: typeof AuthenticatedAppChatRouteWithChildren
   AuthenticatedAppFinanceiroRoute: typeof AuthenticatedAppFinanceiroRoute
   AuthenticatedAppOnboardingRoute: typeof AuthenticatedAppOnboardingRoute
@@ -445,12 +486,14 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppAvaliarContratoIdRoute: typeof AuthenticatedAppAvaliarContratoIdRoute
   AuthenticatedAppCategoriaIdRoute: typeof AuthenticatedAppCategoriaIdRoute
+  AuthenticatedAppPagamentoContratoIdRoute: typeof AuthenticatedAppPagamentoContratoIdRoute
   AuthenticatedAppPrestadorIdRoute: typeof AuthenticatedAppPrestadorIdRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppAgendaRoute: AuthenticatedAppAgendaRoute,
   AuthenticatedAppBuscarRoute: AuthenticatedAppBuscarRoute,
+  AuthenticatedAppCarteiraRoute: AuthenticatedAppCarteiraRoute,
   AuthenticatedAppChatRoute: AuthenticatedAppChatRouteWithChildren,
   AuthenticatedAppFinanceiroRoute: AuthenticatedAppFinanceiroRoute,
   AuthenticatedAppOnboardingRoute: AuthenticatedAppOnboardingRoute,
@@ -463,6 +506,8 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppAvaliarContratoIdRoute:
     AuthenticatedAppAvaliarContratoIdRoute,
   AuthenticatedAppCategoriaIdRoute: AuthenticatedAppCategoriaIdRoute,
+  AuthenticatedAppPagamentoContratoIdRoute:
+    AuthenticatedAppPagamentoContratoIdRoute,
   AuthenticatedAppPrestadorIdRoute: AuthenticatedAppPrestadorIdRoute,
 }
 
@@ -489,13 +534,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

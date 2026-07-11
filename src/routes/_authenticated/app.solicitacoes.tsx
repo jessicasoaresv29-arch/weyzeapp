@@ -17,6 +17,10 @@ const STATUS_LABEL: Record<string, { text: string; color: string }> = {
   recebendo_propostas: { text: "Recebendo propostas", color: "bg-primary/10 text-primary" },
   aceito: { text: "Aceito", color: "bg-success/10 text-success" },
   em_andamento: { text: "Em andamento", color: "bg-amber-100 text-amber-700" },
+  aguardando_confirmacao_cliente: { text: "Aguardando sua confirmação", color: "bg-amber-100 text-amber-700" },
+  aguardando_pagamento: { text: "Aguardando pagamento", color: "bg-primary/10 text-primary" },
+  pago: { text: "Pago", color: "bg-emerald-100 text-emerald-700" },
+  disputado: { text: "Em disputa", color: "bg-destructive/10 text-destructive" },
   concluido: { text: "Concluído", color: "bg-muted text-muted-foreground" },
   cancelado: { text: "Cancelado", color: "bg-destructive/10 text-destructive" },
 };
