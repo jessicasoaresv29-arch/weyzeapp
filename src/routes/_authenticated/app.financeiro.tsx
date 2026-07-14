@@ -25,7 +25,7 @@ function Financeiro() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("contratos")
-        .select("id, status, valor_final, data_inicio, data_final, created_at, solicitacoes(titulo)")
+        .select("id, status, valor_final, data_inicio, data_final, created_at, solicitacoes(titulo), payments(forma, status, paid_at, valor_bruto)")
         .eq("prestador_id", prestadorId!)
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -34,16 +34,34 @@ function Financeiro() {
   });
 
   const contratos = q.data ?? [];
-  const concluidos = contratos.filter((c: any) => c.status === "concluido");
-  const emAndamento = contratos.filter((c: any) => c.status === "em_andamento" || c.status === "ativo");
-  const totalRecebido = concluidos.reduce((s, c: any) => s + Number(c.valor_final ?? 0), 0);
+  const FORMAS_ONLINE = new Set(["pix", "credito", "debito"]);
+  const pagoOnline = (c: any) =>
+    Array.isArray(c.payments) &&
+    c.payments.some((p: any) => p?.status === "concluido" && FORMAS_ONLINE.has(p?.forma));
+  const recebidos = contratos.filter((c: any) => c.status === "concluido" && pagoOnline(c));
+  const emAndamento = contratos.filter(
+    (c: any) => c.status === "em_andamento" || c.status === "ativo",
+  );
+  const totalRecebido = recebidos.reduce((s, c: any) => s + Number(c.valor_final ?? 0), 0);
   const totalPrevisto = emAndamento.reduce((s, c: any) => s + Number(c.valor_final ?? 0), 0);
   const mesAtual = new Date();
-  const doMes = concluidos.filter((c: any) => {
+  const doMes = recebidos.filter((c: any) => {
     const d = new Date(c.data_final ?? c.created_at);
     return d.getMonth() === mesAtual.getMonth() && d.getFullYear() === mesAtual.getFullYear();
   });
   const totalMes = doMes.reduce((s, c: any) => s + Number(c.valor_final ?? 0), 0);
+
+  const formaLabel = (c: any) => {
+    const p = Array.isArray(c.payments)
+      ? c.payments.find((x: any) => x?.status === "concluido") ?? c.payments[0]
+      : null;
+    if (!p) return c.status;
+    if (p.forma === "dinheiro") return "dinheiro";
+    if (FORMAS_ONLINE.has(p.forma)) return p.forma;
+    return c.status;
+  };
+  const isDinheiro = (c: any) =>
+    Array.isArray(c.payments) && c.payments.some((p: any) => p?.forma === "dinheiro");
 
   return (
     <div className="flex flex-col gap-5 pb-8">
@@ -57,7 +75,7 @@ function Financeiro() {
       <section className="mx-6 rounded-2xl bg-brand-gradient p-5 text-white shadow-soft">
         <p className="text-sm text-white/80">Total recebido</p>
         <p className="mt-1 text-3xl font-bold">R$ {totalRecebido.toFixed(2)}</p>
-        <p className="mt-1 text-xs text-white/70">{concluidos.length} serviço(s) concluído(s)</p>
+        <p className="mt-1 text-xs text-white/70">{recebidos.length} serviço(s) recebido(s)</p>
       </section>
 
       <section className="mx-6 grid grid-cols-2 gap-3">
@@ -81,12 +99,16 @@ function Financeiro() {
               <div className="min-w-0">
                 <p className="truncate font-semibold">{c.solicitacoes?.titulo ?? "Serviço"}</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  {new Date(c.created_at).toLocaleDateString("pt-BR")} · {c.status}
+                  {new Date(c.created_at).toLocaleDateString("pt-BR")} · {formaLabel(c)}
                 </p>
               </div>
               <div className="text-right">
-                <p className="font-bold text-success">R$ {Number(c.valor_final ?? 0).toFixed(2)}</p>
-                {c.status === "concluido" && <CheckCircle2 className="ml-auto mt-1 h-4 w-4 text-success" />}
+                <p className={`font-bold ${isDinheiro(c) ? "text-muted-foreground" : "text-success"}`}>
+                  R$ {Number(c.valor_final ?? 0).toFixed(2)}
+                </p>
+                {c.status === "concluido" && pagoOnline(c) && (
+                  <CheckCircle2 className="ml-auto mt-1 h-4 w-4 text-success" />
+                )}
               </div>
             </div>
           ))
