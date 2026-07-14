@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, LogOut, ListChecks, Check } from "lucide-react";
+import { Loader2, LogOut, ListChecks, Check, Bell } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchCategorias } from "@/lib/data";
 import { ensurePrestador } from "@/lib/prestador";
 import { CategoriaIcon } from "@/components/categoria-icon";
+import {
+  notificationPermission,
+  requestNotificationPermission,
+  notificationsSupported,
+} from "@/lib/notifications";
 
 export const Route = createFileRoute("/_authenticated/app/perfil")({
   component: Perfil,
@@ -31,6 +36,20 @@ function Perfil() {
   const [prestadorId, setPrestadorId] = useState<string | null>(null);
   const [selCats, setSelCats] = useState<Set<string>>(new Set());
   const [savingCats, setSavingCats] = useState(false);
+  const [notifPerm, setNotifPerm] = useState<NotificationPermission | "unsupported">(
+    notificationPermission(),
+  );
+
+  async function ativarNotificacoes() {
+    if (!notificationsSupported()) {
+      toast.error("Seu navegador não suporta notificações. No iPhone, adicione o app à tela inicial primeiro.");
+      return;
+    }
+    const p = await requestNotificationPermission();
+    setNotifPerm(p);
+    if (p === "granted") toast.success("Notificações ativadas!");
+    else if (p === "denied") toast.error("Permissão negada. Ative nas configurações do navegador.");
+  }
 
   const isPrestador = profile?.tipo_usuario === "prestador";
   const catsQ = useQuery({ queryKey: ["categorias"], queryFn: fetchCategorias, enabled: isPrestador });
