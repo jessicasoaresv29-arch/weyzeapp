@@ -1,0 +1,14 @@
+{
+  "name": "Weyze — Serviços de confiança",
+  "short_name": "Weyze",
+  "description": "Encontre e contrate profissionais de confiança em poucos toques.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0B1220",
+  "theme_color": "#174EA6",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "64x64", "type": "image/x-icon" }
+  ]
+}

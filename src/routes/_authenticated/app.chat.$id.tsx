@@ -86,6 +86,15 @@ function ChatConversation() {
   useEffect(() => {
     if (!id || !user) return;
     let mounted = true;
+    const marcarLidas = async () => {
+      await supabase
+        .from("mensagens")
+        .update({ lida: true, lida_at: new Date().toISOString() })
+        .eq("conversa_id", id)
+        .neq("remetente_id", user.id)
+        .eq("lida", false);
+      qc.invalidateQueries({ queryKey: ["conversas"] });
+    };
     (async () => {
       const { data, error } = await supabase.from("mensagens").select("*").eq("conversa_id", id).order("created_at");
       if (error) {
@@ -93,11 +102,13 @@ function ChatConversation() {
         return;
       }
       if (mounted) setMessages((data ?? []) as Msg[]);
+      marcarLidas();
     })();
     const channel = supabase.channel(`msg-${id}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "mensagens", filter: `conversa_id=eq.${id}` }, (payload) => {
         const next = payload.new as Msg;
         setMessages((prev) => prev.some((m) => m.id === next.id) ? prev : [...prev, next]);
+        if (next.remetente_id !== user.id) marcarLidas();
       })
       .subscribe((status) => {
         if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
@@ -105,7 +116,7 @@ function ChatConversation() {
         }
       });
     return () => { mounted = false; supabase.removeChannel(channel); };
-  }, [id, user]);
+  }, [id, user, qc]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages.length]);
 

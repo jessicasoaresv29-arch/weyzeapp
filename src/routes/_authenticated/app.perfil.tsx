@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, LogOut, ListChecks, Check } from "lucide-react";
+import { Loader2, LogOut, ListChecks, Check, Bell } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchCategorias } from "@/lib/data";
 import { ensurePrestador } from "@/lib/prestador";
 import { CategoriaIcon } from "@/components/categoria-icon";
+import {
+  notificationPermission,
+  requestNotificationPermission,
+  notificationsSupported,
+} from "@/lib/notifications";
 
 export const Route = createFileRoute("/_authenticated/app/perfil")({
   component: Perfil,
@@ -31,6 +36,20 @@ function Perfil() {
   const [prestadorId, setPrestadorId] = useState<string | null>(null);
   const [selCats, setSelCats] = useState<Set<string>>(new Set());
   const [savingCats, setSavingCats] = useState(false);
+  const [notifPerm, setNotifPerm] = useState<NotificationPermission | "unsupported">(
+    notificationPermission(),
+  );
+
+  async function ativarNotificacoes() {
+    if (!notificationsSupported()) {
+      toast.error("Seu navegador não suporta notificações. No iPhone, adicione o app à tela inicial primeiro.");
+      return;
+    }
+    const p = await requestNotificationPermission();
+    setNotifPerm(p);
+    if (p === "granted") toast.success("Notificações ativadas!");
+    else if (p === "denied") toast.error("Permissão negada. Ative nas configurações do navegador.");
+  }
 
   const isPrestador = profile?.tipo_usuario === "prestador";
   const catsQ = useQuery({ queryKey: ["categorias"], queryFn: fetchCategorias, enabled: isPrestador });
@@ -199,6 +218,30 @@ function Perfil() {
         <Button variant="outline" onClick={logout} size="lg" className="h-12 w-full rounded-xl">
           <LogOut className="h-5 w-5" /> Sair da conta
         </Button>
+
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-card">
+          <div className="mb-2 flex items-center gap-2">
+            <Bell className="h-5 w-5 text-primary" />
+            <h2 className="text-base font-semibold">Notificações no celular</h2>
+          </div>
+          <p className="mb-3 text-xs text-muted-foreground">
+            Receba avisos de novas mensagens e propostas mesmo com o app em segundo plano.
+            No iPhone, adicione o Weyze à tela inicial antes de ativar.
+          </p>
+          {notifPerm === "granted" ? (
+            <div className="flex items-center gap-2 rounded-xl bg-success/10 px-3 py-2 text-sm text-success">
+              <Check className="h-4 w-4" /> Notificações ativadas
+            </div>
+          ) : notifPerm === "denied" ? (
+            <p className="text-sm text-destructive">
+              Notificações bloqueadas. Libere nas configurações do navegador.
+            </p>
+          ) : (
+            <Button onClick={ativarNotificacoes} size="lg" className="h-12 w-full rounded-xl">
+              <Bell className="h-5 w-5" /> Ativar notificações
+            </Button>
+          )}
+        </div>
       </section>
     </div>
   );

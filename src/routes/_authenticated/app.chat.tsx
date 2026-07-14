@@ -45,7 +45,7 @@ function ChatList() {
     const ch = supabase
       .channel(`chat-list-${user.id}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "conversas" }, () => q.refetch())
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "mensagens" }, () => q.refetch())
+      .on("postgres_changes", { event: "*", schema: "public", table: "mensagens" }, () => q.refetch())
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [user, q.refetch]);
