@@ -75,7 +75,7 @@ function Financeiro() {
       <section className="mx-6 rounded-2xl bg-brand-gradient p-5 text-white shadow-soft">
         <p className="text-sm text-white/80">Total recebido</p>
         <p className="mt-1 text-3xl font-bold">R$ {totalRecebido.toFixed(2)}</p>
-        <p className="mt-1 text-xs text-white/70">{concluidos.length} serviço(s) concluído(s)</p>
+        <p className="mt-1 text-xs text-white/70">{recebidos.length} serviço(s) recebido(s)</p>
       </section>
 
       <section className="mx-6 grid grid-cols-2 gap-3">
