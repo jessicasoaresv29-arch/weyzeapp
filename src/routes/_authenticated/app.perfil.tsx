@@ -218,6 +218,30 @@ function Perfil() {
         <Button variant="outline" onClick={logout} size="lg" className="h-12 w-full rounded-xl">
           <LogOut className="h-5 w-5" /> Sair da conta
         </Button>
+
+        <div className="rounded-2xl border border-border bg-card p-4 shadow-card">
+          <div className="mb-2 flex items-center gap-2">
+            <Bell className="h-5 w-5 text-primary" />
+            <h2 className="text-base font-semibold">Notificações no celular</h2>
+          </div>
+          <p className="mb-3 text-xs text-muted-foreground">
+            Receba avisos de novas mensagens e propostas mesmo com o app em segundo plano.
+            No iPhone, adicione o Weyze à tela inicial antes de ativar.
+          </p>
+          {notifPerm === "granted" ? (
+            <div className="flex items-center gap-2 rounded-xl bg-success/10 px-3 py-2 text-sm text-success">
+              <Check className="h-4 w-4" /> Notificações ativadas
+            </div>
+          ) : notifPerm === "denied" ? (
+            <p className="text-sm text-destructive">
+              Notificações bloqueadas. Libere nas configurações do navegador.
+            </p>
+          ) : (
+            <Button onClick={ativarNotificacoes} size="lg" className="h-12 w-full rounded-xl">
+              <Bell className="h-5 w-5" /> Ativar notificações
+            </Button>
+          )}
+        </div>
       </section>
     </div>
   );
