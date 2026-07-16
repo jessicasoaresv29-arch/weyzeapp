@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { criarPagamentoPix, reconciliarPagamento } from "@/lib/mercadopago.functions";
 
 export type FormaPagamento = "pix" | "credito" | "debito" | "dinheiro";
 
@@ -42,16 +43,18 @@ export interface PaymentGateway {
   confirmarPagamento(paymentId: string): Promise<void>;
 }
 
-class MockGateway implements PaymentGateway {
-  readonly name = "mock";
+class MercadoPagoGateway implements PaymentGateway {
+  readonly name = "mercadopago";
   async confirmarPagamento(paymentId: string) {
-    await new Promise((r) => setTimeout(r, 800)); // simula latência bancária
-    const { error } = await supabase.rpc("confirmar_pagamento_mock" as any, { _payment_id: paymentId } as any);
-    if (error) throw error;
+    // Consulta o MP e reconcilia (usado quando o cliente clica "Já paguei" no PIX).
+    await reconciliarPagamento({ data: { paymentId } });
+  }
+  async criarPix(paymentId: string) {
+    return criarPagamentoPix({ data: { paymentId } });
   }
 }
 
-export const gateway: PaymentGateway = new MockGateway();
+export const gateway: MercadoPagoGateway = new MercadoPagoGateway();
 
 // -------------------------------------------------------------
 // RPC wrappers

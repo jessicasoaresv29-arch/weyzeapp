@@ -17,6 +17,8 @@ import {
   type FormaPagamento,
 } from "@/lib/payments";
 import { supabase } from "@/integrations/supabase/client";
+import { getMpPublicKey, processarPagamentoCartao } from "@/lib/mercadopago.functions";
+import { initMercadoPago, CardPayment } from "@mercadopago/sdk-react";
 
 export const Route = createFileRoute("/_authenticated/app/pagamento/$contratoId")({
   component: Pagamento,
@@ -34,8 +36,22 @@ function Pagamento() {
   const contrato: any = contratoQ.data;
   const pagamento: any = pagQ.data;
   const [forma, setForma] = useState<FormaPagamento | null>(null);
-  const [parcelas, setParcelas] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [mpReady, setMpReady] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    getMpPublicKey().then(({ publicKey }) => {
+      if (!alive || !publicKey) return;
+      try {
+        initMercadoPago(publicKey, { locale: "pt-BR" });
+        setMpReady(true);
+      } catch (e) {
+        console.error("[MP init]", e);
+      }
+    });
+    return () => { alive = false; };
+  }, []);
 
   // Realtime: refresh quando pagamento muda
   useEffect(() => {
@@ -60,9 +76,14 @@ function Pagamento() {
     if (!isCliente) return toast.error("Apenas o cliente pode iniciar o pagamento.");
     setLoading(true);
     try {
-      await iniciarPagamento(contratoId, f, parcelas);
+      const paymentId = await iniciarPagamento(contratoId, f, 1);
       setForma(f);
       await qc.invalidateQueries({ queryKey: ["pagamento-ativo", contratoId] });
+      if (f === "pix" && paymentId) {
+        // Gera QR real no Mercado Pago
+        await gateway.criarPix(paymentId);
+        await qc.invalidateQueries({ queryKey: ["pagamento-ativo", contratoId] });
+      }
     } catch (e: any) {
       toast.error(e.message ?? "Não foi possível iniciar o pagamento.");
     } finally { setLoading(false); }
@@ -73,7 +94,7 @@ function Pagamento() {
     setLoading(true);
     try {
       await gateway.confirmarPagamento(pagamento.id);
-      toast.success("Pagamento confirmado!");
+      toast.success("Verificando pagamento...");
       await qc.invalidateQueries({ queryKey: ["pagamento-ativo", contratoId] });
     } catch (e: any) {
       toast.error(e.message ?? "Falha ao confirmar pagamento.");
@@ -148,9 +169,17 @@ function Pagamento() {
       {activeForma === "pix" && status !== "concluido" && (
         <section className="mx-6 space-y-4 rounded-2xl border border-border bg-card p-5 shadow-card">
           <div className="text-center">
-            <div className="mx-auto flex h-40 w-40 items-center justify-center rounded-2xl bg-secondary">
-              <QrCode className="h-24 w-24 text-primary" />
-            </div>
+            {pagamento?.pix_qr_code ? (
+              <img
+                src={`data:image/png;base64,${pagamento.pix_qr_code}`}
+                alt="QR Code PIX"
+                className="mx-auto h-56 w-56 rounded-2xl border border-border bg-white p-2"
+              />
+            ) : (
+              <div className="mx-auto flex h-40 w-40 items-center justify-center rounded-2xl bg-secondary">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+              </div>
+            )}
             <p className="mt-2 text-xs text-muted-foreground">Escaneie o QR Code no seu banco</p>
           </div>
           <div>
@@ -165,7 +194,7 @@ function Pagamento() {
           </div>
           {isCliente && (
             <Button className="w-full rounded-xl bg-success text-success-foreground hover:bg-success/90" onClick={confirmarPix} disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Já paguei — confirmar"}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Já paguei — verificar"}
             </Button>
           )}
         </section>
@@ -173,25 +202,46 @@ function Pagamento() {
 
       {(activeForma === "credito" || activeForma === "debito") && status !== "concluido" && (
         <section className="mx-6 space-y-3 rounded-2xl border border-border bg-card p-5 shadow-card">
-          <h3 className="font-semibold">Dados do cartão</h3>
-          <Input placeholder="Nome no cartão" className="rounded-xl" />
-          <Input placeholder="Número" className="rounded-xl" />
-          <div className="grid grid-cols-2 gap-2">
-            <Input placeholder="MM/AA" className="rounded-xl" />
-            <Input placeholder="CVV" className="rounded-xl" />
-          </div>
-          {activeForma === "credito" && (
-            <div>
-              <p className="text-xs font-medium">Parcelas</p>
-              <select value={parcelas} onChange={(e) => setParcelas(Number(e.target.value))} className="mt-1 h-10 w-full rounded-xl border border-border bg-background px-3 text-sm">
-                {[1,2,3,4,5,6,7,8,9,10,11,12].map(n => <option key={n} value={n}>{n}x</option>)}
-              </select>
-            </div>
-          )}
-          {isCliente && (
-            <Button className="w-full rounded-xl bg-success text-success-foreground hover:bg-success/90" onClick={confirmarPix} disabled={loading}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Pagar agora"}
-            </Button>
+          <h3 className="font-semibold">Pagamento com {activeForma === "credito" ? "Crédito" : "Débito"}</h3>
+          {mpReady && isCliente ? (
+            <CardPayment
+              initialization={{ amount: Number(pagamento?.valor_bruto ?? valor) }}
+              customization={{
+                paymentMethods: {
+                  maxInstallments: activeForma === "credito" ? 12 : 1,
+                  minInstallments: 1,
+                  types: { excluded: activeForma === "credito" ? ["debit_card"] : ["credit_card"] },
+                },
+                visual: { style: { theme: "default" } },
+              }}
+              onSubmit={async (data: any) => {
+                setLoading(true);
+                try {
+                  const result = await processarPagamentoCartao({
+                    data: {
+                      paymentId: pagamento.id,
+                      token: data.formData.token,
+                      payment_method_id: data.formData.payment_method_id,
+                      issuer_id: data.formData.issuer_id ?? null,
+                      installments: Number(data.formData.installments ?? 1),
+                      payer: {
+                        email: data.formData.payer?.email ?? user?.email ?? "",
+                        identification: data.formData.payer?.identification,
+                      },
+                    },
+                  });
+                  if (result.status === "approved") toast.success("Pagamento aprovado!");
+                  else if (result.status === "in_process") toast.info("Pagamento em análise.");
+                  else toast.error(`Pagamento ${result.status}: ${result.statusDetail}`);
+                  await qc.invalidateQueries({ queryKey: ["pagamento-ativo", contratoId] });
+                } catch (e: any) {
+                  toast.error(e.message ?? "Falha ao processar cartão.");
+                } finally { setLoading(false); }
+              }}
+              onError={(err: any) => { console.error(err); toast.error("Erro no formulário de cartão."); }}
+            />
+          ) : (
+            <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
           )}
         </section>
       )}
