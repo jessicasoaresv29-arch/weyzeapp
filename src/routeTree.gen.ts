@@ -27,6 +27,7 @@ import { Route as AuthenticatedAppCarteiraRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
 import { Route as AuthenticatedAppAgendaRouteImport } from './routes/_authenticated/app.agenda'
 import { Route as ApiPublicWebhooksMercadopagoRouteImport } from './routes/api/public/webhooks/mercadopago'
+import { Route as ApiPublicAdminSummaryRouteImport } from './routes/api/public/admin/summary'
 import { Route as AuthenticatedAppPrestadorIdRouteImport } from './routes/_authenticated/app.prestador.$id'
 import { Route as AuthenticatedAppPagamentoContratoIdRouteImport } from './routes/_authenticated/app.pagamento.$contratoId'
 import { Route as AuthenticatedAppChatIdRouteImport } from './routes/_authenticated/app.chat.$id'
@@ -129,6 +130,11 @@ const ApiPublicWebhooksMercadopagoRoute =
     path: '/api/public/webhooks/mercadopago',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicAdminSummaryRoute = ApiPublicAdminSummaryRouteImport.update({
+  id: '/api/public/admin/summary',
+  path: '/api/public/admin/summary',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAppPrestadorIdRoute =
   AuthenticatedAppPrestadorIdRouteImport.update({
     id: '/prestador/$id',
@@ -181,6 +187,7 @@ export interface FileRoutesByFullPath {
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/pagamento/$contratoId': typeof AuthenticatedAppPagamentoContratoIdRoute
   '/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
+  '/api/public/admin/summary': typeof ApiPublicAdminSummaryRoute
   '/api/public/webhooks/mercadopago': typeof ApiPublicWebhooksMercadopagoRoute
 }
 export interface FileRoutesByTo {
@@ -204,6 +211,7 @@ export interface FileRoutesByTo {
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/pagamento/$contratoId': typeof AuthenticatedAppPagamentoContratoIdRoute
   '/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
+  '/api/public/admin/summary': typeof ApiPublicAdminSummaryRoute
   '/api/public/webhooks/mercadopago': typeof ApiPublicWebhooksMercadopagoRoute
 }
 export interface FileRoutesById {
@@ -230,6 +238,7 @@ export interface FileRoutesById {
   '/_authenticated/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/_authenticated/app/pagamento/$contratoId': typeof AuthenticatedAppPagamentoContratoIdRoute
   '/_authenticated/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
+  '/api/public/admin/summary': typeof ApiPublicAdminSummaryRoute
   '/api/public/webhooks/mercadopago': typeof ApiPublicWebhooksMercadopagoRoute
 }
 export interface FileRouteTypes {
@@ -256,6 +265,7 @@ export interface FileRouteTypes {
     | '/app/chat/$id'
     | '/app/pagamento/$contratoId'
     | '/app/prestador/$id'
+    | '/api/public/admin/summary'
     | '/api/public/webhooks/mercadopago'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -279,6 +289,7 @@ export interface FileRouteTypes {
     | '/app/chat/$id'
     | '/app/pagamento/$contratoId'
     | '/app/prestador/$id'
+    | '/api/public/admin/summary'
     | '/api/public/webhooks/mercadopago'
   id:
     | '__root__'
@@ -304,6 +315,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/chat/$id'
     | '/_authenticated/app/pagamento/$contratoId'
     | '/_authenticated/app/prestador/$id'
+    | '/api/public/admin/summary'
     | '/api/public/webhooks/mercadopago'
   fileRoutesById: FileRoutesById
 }
@@ -312,6 +324,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiPublicAdminSummaryRoute: typeof ApiPublicAdminSummaryRoute
   ApiPublicWebhooksMercadopagoRoute: typeof ApiPublicWebhooksMercadopagoRoute
 }
 
@@ -443,6 +456,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhooksMercadopagoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/admin/summary': {
+      id: '/api/public/admin/summary'
+      path: '/api/public/admin/summary'
+      fullPath: '/api/public/admin/summary'
+      preLoaderRoute: typeof ApiPublicAdminSummaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/app/prestador/$id': {
       id: '/_authenticated/app/prestador/$id'
       path: '/prestador/$id'
@@ -551,6 +571,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiPublicAdminSummaryRoute: ApiPublicAdminSummaryRoute,
   ApiPublicWebhooksMercadopagoRoute: ApiPublicWebhooksMercadopagoRoute,
 }
 export const routeTree = rootRouteImport
