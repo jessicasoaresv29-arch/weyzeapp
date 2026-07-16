@@ -562,14 +562,18 @@ export type Database = {
           created_at: string
           forma: Database["public"]["Enums"]["forma_pagamento"]
           gateway: string | null
+          gateway_metadata: Json | null
           gateway_ref: string | null
           id: string
+          mp_payment_id: string | null
+          mp_preference_id: string | null
           paid_at: string | null
           parcelas: number | null
           pix_copia_cola: string | null
           pix_qr_code: string | null
           prestador_id: string
           status: Database["public"]["Enums"]["status_pagamento"]
+          status_detail: string | null
           taxa_percentual: number
           taxa_valor: number
           updated_at: string
@@ -585,14 +589,18 @@ export type Database = {
           created_at?: string
           forma: Database["public"]["Enums"]["forma_pagamento"]
           gateway?: string | null
+          gateway_metadata?: Json | null
           gateway_ref?: string | null
           id?: string
+          mp_payment_id?: string | null
+          mp_preference_id?: string | null
           paid_at?: string | null
           parcelas?: number | null
           pix_copia_cola?: string | null
           pix_qr_code?: string | null
           prestador_id: string
           status?: Database["public"]["Enums"]["status_pagamento"]
+          status_detail?: string | null
           taxa_percentual?: number
           taxa_valor?: number
           updated_at?: string
@@ -608,14 +616,18 @@ export type Database = {
           created_at?: string
           forma?: Database["public"]["Enums"]["forma_pagamento"]
           gateway?: string | null
+          gateway_metadata?: Json | null
           gateway_ref?: string | null
           id?: string
+          mp_payment_id?: string | null
+          mp_preference_id?: string | null
           paid_at?: string | null
           parcelas?: number | null
           pix_copia_cola?: string | null
           pix_qr_code?: string | null
           prestador_id?: string
           status?: Database["public"]["Enums"]["status_pagamento"]
+          status_detail?: string | null
           taxa_percentual?: number
           taxa_valor?: number
           updated_at?: string
@@ -1191,6 +1203,15 @@ export type Database = {
         Args: { _payment_id: string }
         Returns: undefined
       }
+      confirmar_pagamento_gateway: {
+        Args: {
+          _metadata: Json
+          _mp_payment_id: string
+          _payment_id: string
+          _status_detail: string
+        }
+        Returns: undefined
+      }
       confirmar_pagamento_mock: {
         Args: { _payment_id: string }
         Returns: undefined
@@ -1225,6 +1246,17 @@ export type Database = {
       prestador_tem_proposta: {
         Args: { _solicitacao_id: string; _user_id: string }
         Returns: boolean
+      }
+      registrar_gateway_ids: {
+        Args: {
+          _metadata: Json
+          _mp_payment_id: string
+          _mp_preference_id: string
+          _payment_id: string
+          _pix_copia_cola: string
+          _pix_qr_code: string
+        }
+        Returns: undefined
       }
     }
     Enums: {
