@@ -258,3 +258,164 @@ export const reconciliarPagamento = createServerFn({ method: "POST" })
     }
     return { status: mp.status, statusDetail: mp.status_detail };
   });
+
+// =============================================================
+// TEST HELPERS — usados apenas pela tela /app/mp-teste
+// =============================================================
+
+/** Cria uma Preferência de teste no MP (Wallet Brick / Checkout Pro). */
+export const criarPreferenciaTeste = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        valor: z.number().positive().max(100000),
+        descricao: z.string().trim().min(1).max(200).default("Teste Weyze"),
+        emailComprador: z.string().email(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { userId } = context;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const externalRef = `test-${crypto.randomUUID()}`;
+
+    const pref = await mpFetch<{ id: string; init_point: string; sandbox_init_point: string }>(
+      "/checkout/preferences",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          items: [
+            {
+              id: externalRef,
+              title: data.descricao,
+              quantity: 1,
+              currency_id: "BRL",
+              unit_price: Number(data.valor),
+            },
+          ],
+          payer: { email: data.emailComprador },
+          external_reference: externalRef,
+          notification_url: "https://weyzeapp.lovable.app/api/public/webhooks/mercadopago",
+          back_urls: {
+            success: "https://weyzeapp.lovable.app/app/mp-teste",
+            failure: "https://weyzeapp.lovable.app/app/mp-teste",
+            pending: "https://weyzeapp.lovable.app/app/mp-teste",
+          },
+          auto_return: "approved",
+        }),
+      },
+    );
+
+    await (supabaseAdmin as any).from("mp_test_payments").insert({
+      user_id: userId,
+      external_ref: externalRef,
+      valor: data.valor,
+      forma: "cartao",
+      status: "pendente",
+      preference_id: pref.id,
+      init_point: pref.init_point,
+    });
+
+    return {
+      externalRef,
+      preferenceId: pref.id,
+      initPoint: pref.init_point,
+      sandboxInitPoint: pref.sandbox_init_point,
+    };
+  });
+
+/** Cria pagamento PIX de teste (retorna QR + copia-e-cola). */
+export const criarPixTeste = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        valor: z.number().positive().max(100000),
+        descricao: z.string().trim().min(1).max(200).default("Teste Weyze PIX"),
+        emailComprador: z.string().email(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { userId } = context;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const externalRef = `test-${crypto.randomUUID()}`;
+
+    const mp = await mpFetch<MPPayment>("/v1/payments", {
+      method: "POST",
+      body: JSON.stringify({
+        transaction_amount: Number(data.valor),
+        description: data.descricao,
+        payment_method_id: "pix",
+        external_reference: externalRef,
+        notification_url: "https://weyzeapp.lovable.app/api/public/webhooks/mercadopago",
+        payer: {
+          email: data.emailComprador,
+          first_name: "Teste",
+          last_name: "Weyze",
+        },
+      }),
+    });
+
+    const qr = mp.point_of_interaction?.transaction_data;
+
+    await (supabaseAdmin as any).from("mp_test_payments").insert({
+      user_id: userId,
+      external_ref: externalRef,
+      valor: data.valor,
+      forma: "pix",
+      status: mp.status ?? "pendente",
+      status_detail: mp.status_detail,
+      mp_payment_id: String(mp.id),
+      pix_qr_base64: qr?.qr_code_base64 ?? null,
+      pix_copia_cola: qr?.qr_code ?? null,
+      metadata: mp as any,
+    });
+
+    return {
+      externalRef,
+      mpPaymentId: String(mp.id),
+      status: mp.status,
+      qrCodeBase64: qr?.qr_code_base64 ?? null,
+      copiaCola: qr?.qr_code ?? null,
+      ticketUrl: qr?.ticket_url ?? null,
+    };
+  });
+
+/** Consulta o MP e sincroniza o pagamento de teste. */
+export const sincronizarTeste = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ externalRef: z.string().min(1) }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { userId } = context;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: row } = await (supabaseAdmin as any)
+      .from("mp_test_payments")
+      .select("*")
+      .eq("external_ref", data.externalRef)
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (!row) throw new Error("Pagamento de teste não encontrado.");
+
+    // Busca no MP por external_reference
+    const search = await mpFetch<{ results: any[] }>(
+      `/v1/payments/search?external_reference=${encodeURIComponent(data.externalRef)}&sort=date_created&criteria=desc&limit=1`,
+    );
+    const mp = search.results?.[0];
+    if (!mp) return { status: row.status, statusDetail: row.status_detail };
+
+    await (supabaseAdmin as any)
+      .from("mp_test_payments")
+      .update({
+        status: mp.status,
+        status_detail: mp.status_detail,
+        mp_payment_id: String(mp.id),
+        metadata: mp,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("external_ref", data.externalRef);
+
+    return { status: mp.status, statusDetail: mp.status_detail, mpPaymentId: String(mp.id) };
+  });
