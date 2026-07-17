@@ -43,6 +43,73 @@ export const getMpPublicKey = createServerFn({ method: "GET" }).handler(async ()
   return { publicKey: process.env.MERCADO_PAGO_PUBLIC_KEY ?? "" };
 });
 
+/**
+ * Cria uma Preferência de pagamento no Mercado Pago (Checkout Pro / Wallet Brick).
+ * Retorna preference_id + init_point. Não expõe access token no frontend.
+ * Recebe: valor, descrição, email do comprador e id do serviço (contrato).
+ */
+export const criarPreferencia = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z
+      .object({
+        contratoId: z.string().uuid(),
+        valor: z.number().positive().max(1_000_000),
+        descricao: z.string().trim().min(1).max(200),
+        emailComprador: z.string().email(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+
+    // Confirma que o contrato pertence ao cliente logado
+    const { data: contrato, error } = await supabase
+      .from("contratos")
+      .select("id, cliente_id, valor_final, status")
+      .eq("id", data.contratoId)
+      .maybeSingle();
+    if (error) throw error;
+    if (!contrato || contrato.cliente_id !== userId) {
+      throw new Error("Contrato não encontrado.");
+    }
+
+    const pref = await mpFetch<{
+      id: string;
+      init_point: string;
+      sandbox_init_point: string;
+    }>("/checkout/preferences", {
+      method: "POST",
+      body: JSON.stringify({
+        items: [
+          {
+            id: data.contratoId,
+            title: data.descricao,
+            quantity: 1,
+            currency_id: "BRL",
+            unit_price: Number(data.valor),
+          },
+        ],
+        payer: { email: data.emailComprador },
+        external_reference: data.contratoId,
+        notification_url:
+          "https://weyzeapp.lovable.app/api/public/webhooks/mercadopago",
+        back_urls: {
+          success: "https://weyzeapp.lovable.app/app/carteira",
+          failure: "https://weyzeapp.lovable.app/app/carteira",
+          pending: "https://weyzeapp.lovable.app/app/carteira",
+        },
+        auto_return: "approved",
+      }),
+    });
+
+    return {
+      preferenceId: pref.id,
+      initPoint: pref.init_point,
+      sandboxInitPoint: pref.sandbox_init_point,
+    };
+  });
+
 /** Cliente cria pagamento PIX. Retorna QR code + copia-e-cola. */
 export const criarPagamentoPix = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
