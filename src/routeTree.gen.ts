@@ -21,6 +21,7 @@ import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppPerfilRouteImport } from './routes/_authenticated/app.perfil'
 import { Route as AuthenticatedAppPainelRouteImport } from './routes/_authenticated/app.painel'
 import { Route as AuthenticatedAppOnboardingRouteImport } from './routes/_authenticated/app.onboarding'
+import { Route as AuthenticatedAppMpTesteRouteImport } from './routes/_authenticated/app.mp-teste'
 import { Route as AuthenticatedAppFinanceiroRouteImport } from './routes/_authenticated/app.financeiro'
 import { Route as AuthenticatedAppChatRouteImport } from './routes/_authenticated/app.chat'
 import { Route as AuthenticatedAppCarteiraRouteImport } from './routes/_authenticated/app.carteira'
@@ -97,6 +98,11 @@ const AuthenticatedAppOnboardingRoute =
     path: '/onboarding',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppMpTesteRoute = AuthenticatedAppMpTesteRouteImport.update({
+  id: '/mp-teste',
+  path: '/mp-teste',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedAppFinanceiroRoute =
   AuthenticatedAppFinanceiroRouteImport.update({
     id: '/financeiro',
@@ -175,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/app/chat': typeof AuthenticatedAppChatRouteWithChildren
   '/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
+  '/app/mp-teste': typeof AuthenticatedAppMpTesteRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/painel': typeof AuthenticatedAppPainelRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
@@ -199,6 +206,7 @@ export interface FileRoutesByTo {
   '/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/app/chat': typeof AuthenticatedAppChatRouteWithChildren
   '/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
+  '/app/mp-teste': typeof AuthenticatedAppMpTesteRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/painel': typeof AuthenticatedAppPainelRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
@@ -226,6 +234,7 @@ export interface FileRoutesById {
   '/_authenticated/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/_authenticated/app/chat': typeof AuthenticatedAppChatRouteWithChildren
   '/_authenticated/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
+  '/_authenticated/app/mp-teste': typeof AuthenticatedAppMpTesteRoute
   '/_authenticated/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/_authenticated/app/painel': typeof AuthenticatedAppPainelRoute
   '/_authenticated/app/perfil': typeof AuthenticatedAppPerfilRoute
@@ -253,6 +262,7 @@ export interface FileRouteTypes {
     | '/app/carteira'
     | '/app/chat'
     | '/app/financeiro'
+    | '/app/mp-teste'
     | '/app/onboarding'
     | '/app/painel'
     | '/app/perfil'
@@ -277,6 +287,7 @@ export interface FileRouteTypes {
     | '/app/carteira'
     | '/app/chat'
     | '/app/financeiro'
+    | '/app/mp-teste'
     | '/app/onboarding'
     | '/app/painel'
     | '/app/perfil'
@@ -303,6 +314,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/carteira'
     | '/_authenticated/app/chat'
     | '/_authenticated/app/financeiro'
+    | '/_authenticated/app/mp-teste'
     | '/_authenticated/app/onboarding'
     | '/_authenticated/app/painel'
     | '/_authenticated/app/perfil'
@@ -414,6 +426,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppOnboardingRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/mp-teste': {
+      id: '/_authenticated/app/mp-teste'
+      path: '/mp-teste'
+      fullPath: '/app/mp-teste'
+      preLoaderRoute: typeof AuthenticatedAppMpTesteRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/financeiro': {
       id: '/_authenticated/app/financeiro'
       path: '/financeiro'
@@ -518,6 +537,7 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppCarteiraRoute: typeof AuthenticatedAppCarteiraRoute
   AuthenticatedAppChatRoute: typeof AuthenticatedAppChatRouteWithChildren
   AuthenticatedAppFinanceiroRoute: typeof AuthenticatedAppFinanceiroRoute
+  AuthenticatedAppMpTesteRoute: typeof AuthenticatedAppMpTesteRoute
   AuthenticatedAppOnboardingRoute: typeof AuthenticatedAppOnboardingRoute
   AuthenticatedAppPainelRoute: typeof AuthenticatedAppPainelRoute
   AuthenticatedAppPerfilRoute: typeof AuthenticatedAppPerfilRoute
@@ -537,6 +557,7 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppCarteiraRoute: AuthenticatedAppCarteiraRoute,
   AuthenticatedAppChatRoute: AuthenticatedAppChatRouteWithChildren,
   AuthenticatedAppFinanceiroRoute: AuthenticatedAppFinanceiroRoute,
+  AuthenticatedAppMpTesteRoute: AuthenticatedAppMpTesteRoute,
   AuthenticatedAppOnboardingRoute: AuthenticatedAppOnboardingRoute,
   AuthenticatedAppPainelRoute: AuthenticatedAppPainelRoute,
   AuthenticatedAppPerfilRoute: AuthenticatedAppPerfilRoute,

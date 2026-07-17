@@ -252,10 +252,7 @@ function MpTestePage() {
           {current.forma === "cartao" && current.preference_id && (
             <div>
               {mpReady ? (
-                <Wallet
-                  initialization={{ preferenceId: current.preference_id }}
-                  customization={{ texts: { valueProp: "smart_option" } }}
-                />
+                <Wallet initialization={{ preferenceId: current.preference_id }} />
               ) : (
                 <div className="flex justify-center py-6"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
               )}
