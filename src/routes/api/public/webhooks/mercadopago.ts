@@ -36,9 +36,33 @@ export const Route = createFileRoute("/api/public/webhooks/mercadopago")({
         const mp = await res.json();
 
         const internalId = mp?.external_reference;
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+        // Sempre registra o webhook recebido
+        await (supabaseAdmin as any).from("mp_webhook_log").insert({
+          external_ref: internalId ?? null,
+          mp_payment_id: mp?.id ? String(mp.id) : null,
+          status: mp?.status ?? null,
+          status_detail: mp?.status_detail ?? null,
+          payload: mp ?? payload,
+        });
+
         if (!internalId) return new Response("no external_reference", { status: 200 });
 
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        // Pagamentos de TESTE: atualizam tabela mp_test_payments
+        if (typeof internalId === "string" && internalId.startsWith("test-")) {
+          await (supabaseAdmin as any)
+            .from("mp_test_payments")
+            .update({
+              status: mp.status,
+              status_detail: mp.status_detail,
+              mp_payment_id: String(mp.id),
+              metadata: mp,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("external_ref", internalId);
+          return new Response("ok", { status: 200 });
+        }
 
         if (mp.status === "approved") {
           await supabaseAdmin.rpc("confirmar_pagamento_gateway" as any, {
