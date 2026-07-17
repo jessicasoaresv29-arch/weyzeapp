@@ -432,6 +432,90 @@ export type Database = {
           },
         ]
       }
+      mp_test_payments: {
+        Row: {
+          created_at: string
+          external_ref: string
+          forma: string
+          id: string
+          init_point: string | null
+          metadata: Json | null
+          mp_payment_id: string | null
+          pix_copia_cola: string | null
+          pix_qr_base64: string | null
+          preference_id: string | null
+          status: string
+          status_detail: string | null
+          updated_at: string
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          created_at?: string
+          external_ref: string
+          forma: string
+          id?: string
+          init_point?: string | null
+          metadata?: Json | null
+          mp_payment_id?: string | null
+          pix_copia_cola?: string | null
+          pix_qr_base64?: string | null
+          preference_id?: string | null
+          status?: string
+          status_detail?: string | null
+          updated_at?: string
+          user_id: string
+          valor: number
+        }
+        Update: {
+          created_at?: string
+          external_ref?: string
+          forma?: string
+          id?: string
+          init_point?: string | null
+          metadata?: Json | null
+          mp_payment_id?: string | null
+          pix_copia_cola?: string | null
+          pix_qr_base64?: string | null
+          preference_id?: string | null
+          status?: string
+          status_detail?: string | null
+          updated_at?: string
+          user_id?: string
+          valor?: number
+        }
+        Relationships: []
+      }
+      mp_webhook_log: {
+        Row: {
+          external_ref: string | null
+          id: string
+          mp_payment_id: string | null
+          payload: Json | null
+          received_at: string
+          status: string | null
+          status_detail: string | null
+        }
+        Insert: {
+          external_ref?: string | null
+          id?: string
+          mp_payment_id?: string | null
+          payload?: Json | null
+          received_at?: string
+          status?: string | null
+          status_detail?: string | null
+        }
+        Update: {
+          external_ref?: string | null
+          id?: string
+          mp_payment_id?: string | null
+          payload?: Json | null
+          received_at?: string
+          status?: string | null
+          status_detail?: string | null
+        }
+        Relationships: []
+      }
       notificacoes: {
         Row: {
           created_at: string
