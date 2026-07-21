@@ -1,20 +1,13 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Send, Loader2, MessageSquareWarning, CheckCircle2, CreditCard, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Send, Loader2, MessageSquareWarning } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  abrirDisputa,
-  concluirServico,
-  confirmarConclusaoCliente,
-  confirmarDinheiroPrestador,
-  getPagamentoAtivo,
-} from "@/lib/payments";
 
 export const Route = createFileRoute("/_authenticated/app/chat/$id")({
   component: ChatConversation,
@@ -25,12 +18,10 @@ type Msg = { id: string; conversa_id: string; remetente_id: string; texto: strin
 function ChatConversation() {
   const { id } = Route.useParams();
   const { user } = useAuth();
-  const navigate = useNavigate();
   const qc = useQueryClient();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
-  const [acting, setActing] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const convQ = useQuery({
@@ -63,22 +54,11 @@ function ChatConversation() {
   });
   const contrato: any = contratoQ.data;
 
-  const pagQ = useQuery({
-    queryKey: ["pagamento-ativo", contrato?.id],
-    enabled: !!contrato?.id,
-    queryFn: () => getPagamentoAtivo(contrato.id),
-  });
-  const pagamento: any = pagQ.data;
-
   useEffect(() => {
     if (!contrato?.id) return;
     const ch = supabase.channel(`contrato-${contrato.id}`)
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "contratos", filter: `id=eq.${contrato.id}` },
         () => qc.invalidateQueries({ queryKey: ["contrato-por-solicitacao"] }))
-      .on("postgres_changes", { event: "*", schema: "public", table: "payments", filter: `contrato_id=eq.${contrato.id}` },
-        () => qc.invalidateQueries({ queryKey: ["pagamento-ativo", contrato.id] }))
-      .on("postgres_changes", { event: "*", schema: "public", table: "cash_confirmations" },
-        () => qc.invalidateQueries({ queryKey: ["pagamento-ativo", contrato.id] }))
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [contrato?.id, qc]);
@@ -165,16 +145,6 @@ function ChatConversation() {
     );
   }
 
-  async function acao(fn: () => Promise<unknown>, ok: string) {
-    setActing(true);
-    try { await fn(); toast.success(ok); }
-    catch (e: any) { toast.error(e.message ?? "Erro."); }
-    finally { setActing(false); }
-  }
-
-  const cid = contrato?.id;
-  const cst = contrato?.status;
-
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col">
       <header className="flex items-center gap-3 border-b border-border bg-card px-4 py-3">
@@ -189,47 +159,6 @@ function ChatConversation() {
           <p className="truncate text-xs text-muted-foreground">{conv?.solicitacoes?.titulo ?? ""}</p>
         </div>
       </header>
-
-      {cid && cst && cst !== "pago" && cst !== "cancelado" && (
-        <div className="border-b border-border bg-secondary/50 px-4 py-3">
-          {!isCliente && (cst === "ativo" || cst === "em_andamento") && (
-            <Button size="sm" className="w-full rounded-xl bg-success text-success-foreground hover:bg-success/90"
-              disabled={acting} onClick={() => acao(() => concluirServico(cid), "Serviço concluído. Aguardando cliente.")}>
-              <CheckCircle2 className="h-4 w-4" /> Concluir serviço
-            </Button>
-          )}
-          {isCliente && cst === "aguardando_confirmacao_cliente" && (
-            <div className="space-y-2">
-              <p className="text-sm font-medium">O serviço foi concluído?</p>
-              <div className="flex gap-2">
-                <Button size="sm" className="flex-1 rounded-xl bg-success text-success-foreground hover:bg-success/90"
-                  disabled={acting} onClick={() => acao(() => confirmarConclusaoCliente(cid), "Confirmado. Escolha a forma de pagamento.")}>
-                  Sim
-                </Button>
-                <Button size="sm" variant="outline" className="flex-1 rounded-xl"
-                  disabled={acting} onClick={() => acao(() => abrirDisputa(cid, "Cliente reportou problema pelo chat."), "Problema reportado.")}>
-                  <AlertTriangle className="h-4 w-4" /> Informar problema
-                </Button>
-              </div>
-            </div>
-          )}
-          {isCliente && cst === "aguardando_pagamento" && (
-            <Button size="sm" className="w-full rounded-xl bg-primary text-primary-foreground"
-              onClick={() => navigate({ to: "/app/pagamento/$contratoId", params: { contratoId: cid } })}>
-              <CreditCard className="h-4 w-4" /> Ir para pagamento
-            </Button>
-          )}
-          {!isCliente && cst === "aguardando_pagamento" && pagamento?.forma === "dinheiro" && !pagamento?.cash_confirmations?.prestador_confirmou && (
-            <Button size="sm" className="w-full rounded-xl bg-success text-success-foreground hover:bg-success/90"
-              disabled={acting} onClick={() => acao(() => confirmarDinheiroPrestador(pagamento.id), "Você confirmou o recebimento em dinheiro.")}>
-              Recebi em dinheiro
-            </Button>
-          )}
-          {cst === "disputado" && (
-            <p className="text-sm font-medium text-destructive">Contrato em disputa. Nossa equipe será notificada.</p>
-          )}
-        </div>
-      )}
 
       <div className="flex-1 space-y-2 overflow-y-auto bg-secondary/40 p-4">
         {messages.map((m) => {
