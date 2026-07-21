@@ -21,16 +21,10 @@ import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppPerfilRouteImport } from './routes/_authenticated/app.perfil'
 import { Route as AuthenticatedAppPainelRouteImport } from './routes/_authenticated/app.painel'
 import { Route as AuthenticatedAppOnboardingRouteImport } from './routes/_authenticated/app.onboarding'
-import { Route as AuthenticatedAppMpTesteRouteImport } from './routes/_authenticated/app.mp-teste'
-import { Route as AuthenticatedAppFinanceiroRouteImport } from './routes/_authenticated/app.financeiro'
 import { Route as AuthenticatedAppChatRouteImport } from './routes/_authenticated/app.chat'
-import { Route as AuthenticatedAppCarteiraRouteImport } from './routes/_authenticated/app.carteira'
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
 import { Route as AuthenticatedAppAgendaRouteImport } from './routes/_authenticated/app.agenda'
-import { Route as ApiPublicWebhooksMercadopagoRouteImport } from './routes/api/public/webhooks/mercadopago'
-import { Route as ApiPublicAdminSummaryRouteImport } from './routes/api/public/admin/summary'
 import { Route as AuthenticatedAppPrestadorIdRouteImport } from './routes/_authenticated/app.prestador.$id'
-import { Route as AuthenticatedAppPagamentoContratoIdRouteImport } from './routes/_authenticated/app.pagamento.$contratoId'
 import { Route as AuthenticatedAppChatIdRouteImport } from './routes/_authenticated/app.chat.$id'
 import { Route as AuthenticatedAppCategoriaIdRouteImport } from './routes/_authenticated/app.categoria.$id'
 import { Route as AuthenticatedAppAvaliarContratoIdRouteImport } from './routes/_authenticated/app.avaliar.$contratoId'
@@ -98,28 +92,11 @@ const AuthenticatedAppOnboardingRoute =
     path: '/onboarding',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
-const AuthenticatedAppMpTesteRoute = AuthenticatedAppMpTesteRouteImport.update({
-  id: '/mp-teste',
-  path: '/mp-teste',
-  getParentRoute: () => AuthenticatedAppRoute,
-} as any)
-const AuthenticatedAppFinanceiroRoute =
-  AuthenticatedAppFinanceiroRouteImport.update({
-    id: '/financeiro',
-    path: '/financeiro',
-    getParentRoute: () => AuthenticatedAppRoute,
-  } as any)
 const AuthenticatedAppChatRoute = AuthenticatedAppChatRouteImport.update({
   id: '/chat',
   path: '/chat',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
-const AuthenticatedAppCarteiraRoute =
-  AuthenticatedAppCarteiraRouteImport.update({
-    id: '/carteira',
-    path: '/carteira',
-    getParentRoute: () => AuthenticatedAppRoute,
-  } as any)
 const AuthenticatedAppBuscarRoute = AuthenticatedAppBuscarRouteImport.update({
   id: '/buscar',
   path: '/buscar',
@@ -130,27 +107,10 @@ const AuthenticatedAppAgendaRoute = AuthenticatedAppAgendaRouteImport.update({
   path: '/agenda',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
-const ApiPublicWebhooksMercadopagoRoute =
-  ApiPublicWebhooksMercadopagoRouteImport.update({
-    id: '/api/public/webhooks/mercadopago',
-    path: '/api/public/webhooks/mercadopago',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicAdminSummaryRoute = ApiPublicAdminSummaryRouteImport.update({
-  id: '/api/public/admin/summary',
-  path: '/api/public/admin/summary',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedAppPrestadorIdRoute =
   AuthenticatedAppPrestadorIdRouteImport.update({
     id: '/prestador/$id',
     path: '/prestador/$id',
-    getParentRoute: () => AuthenticatedAppRoute,
-  } as any)
-const AuthenticatedAppPagamentoContratoIdRoute =
-  AuthenticatedAppPagamentoContratoIdRouteImport.update({
-    id: '/pagamento/$contratoId',
-    path: '/pagamento/$contratoId',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
 const AuthenticatedAppChatIdRoute = AuthenticatedAppChatIdRouteImport.update({
@@ -178,10 +138,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/app/agenda': typeof AuthenticatedAppAgendaRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
-  '/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/app/chat': typeof AuthenticatedAppChatRouteWithChildren
-  '/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
-  '/app/mp-teste': typeof AuthenticatedAppMpTesteRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/painel': typeof AuthenticatedAppPainelRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
@@ -192,10 +149,7 @@ export interface FileRoutesByFullPath {
   '/app/avaliar/$contratoId': typeof AuthenticatedAppAvaliarContratoIdRoute
   '/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
-  '/app/pagamento/$contratoId': typeof AuthenticatedAppPagamentoContratoIdRoute
   '/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
-  '/api/public/admin/summary': typeof ApiPublicAdminSummaryRoute
-  '/api/public/webhooks/mercadopago': typeof ApiPublicWebhooksMercadopagoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -203,10 +157,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/app/agenda': typeof AuthenticatedAppAgendaRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
-  '/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/app/chat': typeof AuthenticatedAppChatRouteWithChildren
-  '/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
-  '/app/mp-teste': typeof AuthenticatedAppMpTesteRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/painel': typeof AuthenticatedAppPainelRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
@@ -217,10 +168,7 @@ export interface FileRoutesByTo {
   '/app/avaliar/$contratoId': typeof AuthenticatedAppAvaliarContratoIdRoute
   '/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
-  '/app/pagamento/$contratoId': typeof AuthenticatedAppPagamentoContratoIdRoute
   '/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
-  '/api/public/admin/summary': typeof ApiPublicAdminSummaryRoute
-  '/api/public/webhooks/mercadopago': typeof ApiPublicWebhooksMercadopagoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -231,10 +179,7 @@ export interface FileRoutesById {
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/app/agenda': typeof AuthenticatedAppAgendaRoute
   '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
-  '/_authenticated/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/_authenticated/app/chat': typeof AuthenticatedAppChatRouteWithChildren
-  '/_authenticated/app/financeiro': typeof AuthenticatedAppFinanceiroRoute
-  '/_authenticated/app/mp-teste': typeof AuthenticatedAppMpTesteRoute
   '/_authenticated/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/_authenticated/app/painel': typeof AuthenticatedAppPainelRoute
   '/_authenticated/app/perfil': typeof AuthenticatedAppPerfilRoute
@@ -245,10 +190,7 @@ export interface FileRoutesById {
   '/_authenticated/app/avaliar/$contratoId': typeof AuthenticatedAppAvaliarContratoIdRoute
   '/_authenticated/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
   '/_authenticated/app/chat/$id': typeof AuthenticatedAppChatIdRoute
-  '/_authenticated/app/pagamento/$contratoId': typeof AuthenticatedAppPagamentoContratoIdRoute
   '/_authenticated/app/prestador/$id': typeof AuthenticatedAppPrestadorIdRoute
-  '/api/public/admin/summary': typeof ApiPublicAdminSummaryRoute
-  '/api/public/webhooks/mercadopago': typeof ApiPublicWebhooksMercadopagoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -259,10 +201,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/app/agenda'
     | '/app/buscar'
-    | '/app/carteira'
     | '/app/chat'
-    | '/app/financeiro'
-    | '/app/mp-teste'
     | '/app/onboarding'
     | '/app/painel'
     | '/app/perfil'
@@ -273,10 +212,7 @@ export interface FileRouteTypes {
     | '/app/avaliar/$contratoId'
     | '/app/categoria/$id'
     | '/app/chat/$id'
-    | '/app/pagamento/$contratoId'
     | '/app/prestador/$id'
-    | '/api/public/admin/summary'
-    | '/api/public/webhooks/mercadopago'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -284,10 +220,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/app/agenda'
     | '/app/buscar'
-    | '/app/carteira'
     | '/app/chat'
-    | '/app/financeiro'
-    | '/app/mp-teste'
     | '/app/onboarding'
     | '/app/painel'
     | '/app/perfil'
@@ -298,10 +231,7 @@ export interface FileRouteTypes {
     | '/app/avaliar/$contratoId'
     | '/app/categoria/$id'
     | '/app/chat/$id'
-    | '/app/pagamento/$contratoId'
     | '/app/prestador/$id'
-    | '/api/public/admin/summary'
-    | '/api/public/webhooks/mercadopago'
   id:
     | '__root__'
     | '/'
@@ -311,10 +241,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app'
     | '/_authenticated/app/agenda'
     | '/_authenticated/app/buscar'
-    | '/_authenticated/app/carteira'
     | '/_authenticated/app/chat'
-    | '/_authenticated/app/financeiro'
-    | '/_authenticated/app/mp-teste'
     | '/_authenticated/app/onboarding'
     | '/_authenticated/app/painel'
     | '/_authenticated/app/perfil'
@@ -325,10 +252,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/avaliar/$contratoId'
     | '/_authenticated/app/categoria/$id'
     | '/_authenticated/app/chat/$id'
-    | '/_authenticated/app/pagamento/$contratoId'
     | '/_authenticated/app/prestador/$id'
-    | '/api/public/admin/summary'
-    | '/api/public/webhooks/mercadopago'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -336,8 +260,6 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  ApiPublicAdminSummaryRoute: typeof ApiPublicAdminSummaryRoute
-  ApiPublicWebhooksMercadopagoRoute: typeof ApiPublicWebhooksMercadopagoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -426,32 +348,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppOnboardingRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
-    '/_authenticated/app/mp-teste': {
-      id: '/_authenticated/app/mp-teste'
-      path: '/mp-teste'
-      fullPath: '/app/mp-teste'
-      preLoaderRoute: typeof AuthenticatedAppMpTesteRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
-    }
-    '/_authenticated/app/financeiro': {
-      id: '/_authenticated/app/financeiro'
-      path: '/financeiro'
-      fullPath: '/app/financeiro'
-      preLoaderRoute: typeof AuthenticatedAppFinanceiroRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
-    }
     '/_authenticated/app/chat': {
       id: '/_authenticated/app/chat'
       path: '/chat'
       fullPath: '/app/chat'
       preLoaderRoute: typeof AuthenticatedAppChatRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
-    }
-    '/_authenticated/app/carteira': {
-      id: '/_authenticated/app/carteira'
-      path: '/carteira'
-      fullPath: '/app/carteira'
-      preLoaderRoute: typeof AuthenticatedAppCarteiraRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/buscar': {
@@ -468,32 +369,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppAgendaRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
-    '/api/public/webhooks/mercadopago': {
-      id: '/api/public/webhooks/mercadopago'
-      path: '/api/public/webhooks/mercadopago'
-      fullPath: '/api/public/webhooks/mercadopago'
-      preLoaderRoute: typeof ApiPublicWebhooksMercadopagoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/admin/summary': {
-      id: '/api/public/admin/summary'
-      path: '/api/public/admin/summary'
-      fullPath: '/api/public/admin/summary'
-      preLoaderRoute: typeof ApiPublicAdminSummaryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated/app/prestador/$id': {
       id: '/_authenticated/app/prestador/$id'
       path: '/prestador/$id'
       fullPath: '/app/prestador/$id'
       preLoaderRoute: typeof AuthenticatedAppPrestadorIdRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
-    }
-    '/_authenticated/app/pagamento/$contratoId': {
-      id: '/_authenticated/app/pagamento/$contratoId'
-      path: '/pagamento/$contratoId'
-      fullPath: '/app/pagamento/$contratoId'
-      preLoaderRoute: typeof AuthenticatedAppPagamentoContratoIdRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/chat/$id': {
@@ -534,10 +414,7 @@ const AuthenticatedAppChatRouteWithChildren =
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppAgendaRoute: typeof AuthenticatedAppAgendaRoute
   AuthenticatedAppBuscarRoute: typeof AuthenticatedAppBuscarRoute
-  AuthenticatedAppCarteiraRoute: typeof AuthenticatedAppCarteiraRoute
   AuthenticatedAppChatRoute: typeof AuthenticatedAppChatRouteWithChildren
-  AuthenticatedAppFinanceiroRoute: typeof AuthenticatedAppFinanceiroRoute
-  AuthenticatedAppMpTesteRoute: typeof AuthenticatedAppMpTesteRoute
   AuthenticatedAppOnboardingRoute: typeof AuthenticatedAppOnboardingRoute
   AuthenticatedAppPainelRoute: typeof AuthenticatedAppPainelRoute
   AuthenticatedAppPerfilRoute: typeof AuthenticatedAppPerfilRoute
@@ -547,17 +424,13 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppAvaliarContratoIdRoute: typeof AuthenticatedAppAvaliarContratoIdRoute
   AuthenticatedAppCategoriaIdRoute: typeof AuthenticatedAppCategoriaIdRoute
-  AuthenticatedAppPagamentoContratoIdRoute: typeof AuthenticatedAppPagamentoContratoIdRoute
   AuthenticatedAppPrestadorIdRoute: typeof AuthenticatedAppPrestadorIdRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppAgendaRoute: AuthenticatedAppAgendaRoute,
   AuthenticatedAppBuscarRoute: AuthenticatedAppBuscarRoute,
-  AuthenticatedAppCarteiraRoute: AuthenticatedAppCarteiraRoute,
   AuthenticatedAppChatRoute: AuthenticatedAppChatRouteWithChildren,
-  AuthenticatedAppFinanceiroRoute: AuthenticatedAppFinanceiroRoute,
-  AuthenticatedAppMpTesteRoute: AuthenticatedAppMpTesteRoute,
   AuthenticatedAppOnboardingRoute: AuthenticatedAppOnboardingRoute,
   AuthenticatedAppPainelRoute: AuthenticatedAppPainelRoute,
   AuthenticatedAppPerfilRoute: AuthenticatedAppPerfilRoute,
@@ -568,8 +441,6 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppAvaliarContratoIdRoute:
     AuthenticatedAppAvaliarContratoIdRoute,
   AuthenticatedAppCategoriaIdRoute: AuthenticatedAppCategoriaIdRoute,
-  AuthenticatedAppPagamentoContratoIdRoute:
-    AuthenticatedAppPagamentoContratoIdRoute,
   AuthenticatedAppPrestadorIdRoute: AuthenticatedAppPrestadorIdRoute,
 }
 
@@ -592,8 +463,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  ApiPublicAdminSummaryRoute: ApiPublicAdminSummaryRoute,
-  ApiPublicWebhooksMercadopagoRoute: ApiPublicWebhooksMercadopagoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
