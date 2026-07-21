@@ -107,47 +107,6 @@ export type Database = {
           },
         ]
       }
-      cash_confirmations: {
-        Row: {
-          cliente_confirmou: boolean
-          cliente_confirmou_at: string | null
-          created_at: string
-          id: string
-          payment_id: string
-          prestador_confirmou: boolean
-          prestador_confirmou_at: string | null
-          updated_at: string
-        }
-        Insert: {
-          cliente_confirmou?: boolean
-          cliente_confirmou_at?: string | null
-          created_at?: string
-          id?: string
-          payment_id: string
-          prestador_confirmou?: boolean
-          prestador_confirmou_at?: string | null
-          updated_at?: string
-        }
-        Update: {
-          cliente_confirmou?: boolean
-          cliente_confirmou_at?: string | null
-          created_at?: string
-          id?: string
-          payment_id?: string
-          prestador_confirmou?: boolean
-          prestador_confirmou_at?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "cash_confirmations_payment_id_fkey"
-            columns: ["payment_id"]
-            isOneToOne: true
-            referencedRelation: "payments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       categorias: {
         Row: {
           cor: string
@@ -432,90 +391,6 @@ export type Database = {
           },
         ]
       }
-      mp_test_payments: {
-        Row: {
-          created_at: string
-          external_ref: string
-          forma: string
-          id: string
-          init_point: string | null
-          metadata: Json | null
-          mp_payment_id: string | null
-          pix_copia_cola: string | null
-          pix_qr_base64: string | null
-          preference_id: string | null
-          status: string
-          status_detail: string | null
-          updated_at: string
-          user_id: string
-          valor: number
-        }
-        Insert: {
-          created_at?: string
-          external_ref: string
-          forma: string
-          id?: string
-          init_point?: string | null
-          metadata?: Json | null
-          mp_payment_id?: string | null
-          pix_copia_cola?: string | null
-          pix_qr_base64?: string | null
-          preference_id?: string | null
-          status?: string
-          status_detail?: string | null
-          updated_at?: string
-          user_id: string
-          valor: number
-        }
-        Update: {
-          created_at?: string
-          external_ref?: string
-          forma?: string
-          id?: string
-          init_point?: string | null
-          metadata?: Json | null
-          mp_payment_id?: string | null
-          pix_copia_cola?: string | null
-          pix_qr_base64?: string | null
-          preference_id?: string | null
-          status?: string
-          status_detail?: string | null
-          updated_at?: string
-          user_id?: string
-          valor?: number
-        }
-        Relationships: []
-      }
-      mp_webhook_log: {
-        Row: {
-          external_ref: string | null
-          id: string
-          mp_payment_id: string | null
-          payload: Json | null
-          received_at: string
-          status: string | null
-          status_detail: string | null
-        }
-        Insert: {
-          external_ref?: string | null
-          id?: string
-          mp_payment_id?: string | null
-          payload?: Json | null
-          received_at?: string
-          status?: string | null
-          status_detail?: string | null
-        }
-        Update: {
-          external_ref?: string | null
-          id?: string
-          mp_payment_id?: string | null
-          payload?: Json | null
-          received_at?: string
-          status?: string | null
-          status_detail?: string | null
-        }
-        Relationships: []
-      }
       notificacoes: {
         Row: {
           created_at: string
@@ -553,184 +428,6 @@ export type Database = {
             columns: ["usuario_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      payment_logs: {
-        Row: {
-          ator: string | null
-          created_at: string
-          dados: Json | null
-          evento: string
-          id: string
-          payment_id: string | null
-        }
-        Insert: {
-          ator?: string | null
-          created_at?: string
-          dados?: Json | null
-          evento: string
-          id?: string
-          payment_id?: string | null
-        }
-        Update: {
-          ator?: string | null
-          created_at?: string
-          dados?: Json | null
-          evento?: string
-          id?: string
-          payment_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "payment_logs_payment_id_fkey"
-            columns: ["payment_id"]
-            isOneToOne: false
-            referencedRelation: "payments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      payment_status_history: {
-        Row: {
-          ator: string | null
-          created_at: string
-          id: string
-          motivo: string | null
-          payment_id: string
-          status_anterior:
-            | Database["public"]["Enums"]["status_pagamento"]
-            | null
-          status_novo: Database["public"]["Enums"]["status_pagamento"]
-        }
-        Insert: {
-          ator?: string | null
-          created_at?: string
-          id?: string
-          motivo?: string | null
-          payment_id: string
-          status_anterior?:
-            | Database["public"]["Enums"]["status_pagamento"]
-            | null
-          status_novo: Database["public"]["Enums"]["status_pagamento"]
-        }
-        Update: {
-          ator?: string | null
-          created_at?: string
-          id?: string
-          motivo?: string | null
-          payment_id?: string
-          status_anterior?:
-            | Database["public"]["Enums"]["status_pagamento"]
-            | null
-          status_novo?: Database["public"]["Enums"]["status_pagamento"]
-        }
-        Relationships: [
-          {
-            foreignKeyName: "payment_status_history_payment_id_fkey"
-            columns: ["payment_id"]
-            isOneToOne: false
-            referencedRelation: "payments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      payments: {
-        Row: {
-          cartao_bandeira: string | null
-          cartao_last4: string | null
-          cliente_id: string
-          codigo_transacao: string
-          contrato_id: string
-          created_at: string
-          forma: Database["public"]["Enums"]["forma_pagamento"]
-          gateway: string | null
-          gateway_metadata: Json | null
-          gateway_ref: string | null
-          id: string
-          mp_payment_id: string | null
-          mp_preference_id: string | null
-          paid_at: string | null
-          parcelas: number | null
-          pix_copia_cola: string | null
-          pix_qr_code: string | null
-          prestador_id: string
-          status: Database["public"]["Enums"]["status_pagamento"]
-          status_detail: string | null
-          taxa_percentual: number
-          taxa_valor: number
-          updated_at: string
-          valor_bruto: number
-          valor_liquido: number
-        }
-        Insert: {
-          cartao_bandeira?: string | null
-          cartao_last4?: string | null
-          cliente_id: string
-          codigo_transacao?: string
-          contrato_id: string
-          created_at?: string
-          forma: Database["public"]["Enums"]["forma_pagamento"]
-          gateway?: string | null
-          gateway_metadata?: Json | null
-          gateway_ref?: string | null
-          id?: string
-          mp_payment_id?: string | null
-          mp_preference_id?: string | null
-          paid_at?: string | null
-          parcelas?: number | null
-          pix_copia_cola?: string | null
-          pix_qr_code?: string | null
-          prestador_id: string
-          status?: Database["public"]["Enums"]["status_pagamento"]
-          status_detail?: string | null
-          taxa_percentual?: number
-          taxa_valor?: number
-          updated_at?: string
-          valor_bruto: number
-          valor_liquido?: number
-        }
-        Update: {
-          cartao_bandeira?: string | null
-          cartao_last4?: string | null
-          cliente_id?: string
-          codigo_transacao?: string
-          contrato_id?: string
-          created_at?: string
-          forma?: Database["public"]["Enums"]["forma_pagamento"]
-          gateway?: string | null
-          gateway_metadata?: Json | null
-          gateway_ref?: string | null
-          id?: string
-          mp_payment_id?: string | null
-          mp_preference_id?: string | null
-          paid_at?: string | null
-          parcelas?: number | null
-          pix_copia_cola?: string | null
-          pix_qr_code?: string | null
-          prestador_id?: string
-          status?: Database["public"]["Enums"]["status_pagamento"]
-          status_detail?: string | null
-          taxa_percentual?: number
-          taxa_valor?: number
-          updated_at?: string
-          valor_bruto?: number
-          valor_liquido?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "payments_contrato_id_fkey"
-            columns: ["contrato_id"]
-            isOneToOne: false
-            referencedRelation: "contratos"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payments_prestador_id_fkey"
-            columns: ["prestador_id"]
-            isOneToOne: false
-            referencedRelation: "prestadores"
             referencedColumns: ["id"]
           },
         ]
@@ -1099,102 +796,6 @@ export type Database = {
         }
         Relationships: []
       }
-      wallet_transactions: {
-        Row: {
-          created_at: string
-          descricao: string | null
-          id: string
-          payment_id: string | null
-          prestador_id: string
-          saldo_apos: number
-          tipo: Database["public"]["Enums"]["tipo_transacao_carteira"]
-          valor: number
-          wallet_id: string
-        }
-        Insert: {
-          created_at?: string
-          descricao?: string | null
-          id?: string
-          payment_id?: string | null
-          prestador_id: string
-          saldo_apos: number
-          tipo: Database["public"]["Enums"]["tipo_transacao_carteira"]
-          valor: number
-          wallet_id: string
-        }
-        Update: {
-          created_at?: string
-          descricao?: string | null
-          id?: string
-          payment_id?: string | null
-          prestador_id?: string
-          saldo_apos?: number
-          tipo?: Database["public"]["Enums"]["tipo_transacao_carteira"]
-          valor?: number
-          wallet_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "wallet_transactions_payment_id_fkey"
-            columns: ["payment_id"]
-            isOneToOne: false
-            referencedRelation: "payments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wallet_transactions_prestador_id_fkey"
-            columns: ["prestador_id"]
-            isOneToOne: false
-            referencedRelation: "prestadores"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wallet_transactions_wallet_id_fkey"
-            columns: ["wallet_id"]
-            isOneToOne: false
-            referencedRelation: "wallets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      wallets: {
-        Row: {
-          created_at: string
-          id: string
-          prestador_id: string
-          saldo_disponivel: number
-          saldo_pendente: number
-          total_recebido: number
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          prestador_id: string
-          saldo_disponivel?: number
-          saldo_pendente?: number
-          total_recebido?: number
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          prestador_id?: string
-          saldo_disponivel?: number
-          saldo_pendente?: number
-          total_recebido?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "wallets_prestador_id_fkey"
-            columns: ["prestador_id"]
-            isOneToOne: true
-            referencedRelation: "prestadores"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
     Views: {
       avaliacoes_publicas: {
@@ -1248,58 +849,6 @@ export type Database = {
       }
     }
     Functions: {
-      _creditar_carteira: {
-        Args: {
-          _descricao: string
-          _payment_id: string
-          _prestador_id: string
-          _valor: number
-        }
-        Returns: undefined
-      }
-      _finalizar_dinheiro_se_completo: {
-        Args: { _payment_id: string }
-        Returns: undefined
-      }
-      _garantir_wallet: { Args: { _prestador_id: string }; Returns: string }
-      _registrar_status_pagamento: {
-        Args: {
-          _motivo: string
-          _novo: Database["public"]["Enums"]["status_pagamento"]
-          _payment_id: string
-        }
-        Returns: undefined
-      }
-      abrir_disputa: {
-        Args: { _contrato_id: string; _motivo: string }
-        Returns: undefined
-      }
-      concluir_servico: { Args: { _contrato_id: string }; Returns: undefined }
-      confirmar_conclusao_cliente: {
-        Args: { _contrato_id: string }
-        Returns: undefined
-      }
-      confirmar_dinheiro_cliente: {
-        Args: { _payment_id: string }
-        Returns: undefined
-      }
-      confirmar_dinheiro_prestador: {
-        Args: { _payment_id: string }
-        Returns: undefined
-      }
-      confirmar_pagamento_gateway: {
-        Args: {
-          _metadata: Json
-          _mp_payment_id: string
-          _payment_id: string
-          _status_detail: string
-        }
-        Returns: undefined
-      }
-      confirmar_pagamento_mock: {
-        Args: { _payment_id: string }
-        Returns: undefined
-      }
       criar_notificacao: {
         Args: {
           _link: string
@@ -1318,34 +867,14 @@ export type Database = {
         }
         Returns: boolean
       }
-      iniciar_pagamento: {
-        Args: {
-          _contrato_id: string
-          _forma: Database["public"]["Enums"]["forma_pagamento"]
-          _parcelas?: number
-        }
-        Returns: string
-      }
       is_prestador: { Args: { _user_id: string }; Returns: boolean }
       prestador_tem_proposta: {
         Args: { _solicitacao_id: string; _user_id: string }
         Returns: boolean
       }
-      registrar_gateway_ids: {
-        Args: {
-          _metadata: Json
-          _mp_payment_id: string
-          _mp_preference_id: string
-          _payment_id: string
-          _pix_copia_cola: string
-          _pix_qr_code: string
-        }
-        Returns: undefined
-      }
     }
     Enums: {
       app_role: "admin" | "moderador" | "usuario"
-      forma_pagamento: "pix" | "credito" | "debito" | "dinheiro"
       status_contrato:
         | "ativo"
         | "concluido"
@@ -1356,16 +885,6 @@ export type Database = {
         | "pago"
         | "disputado"
       status_documento: "pendente" | "aprovado" | "recusado"
-      status_pagamento:
-        | "aguardando_pagamento"
-        | "pendente"
-        | "aprovado"
-        | "recusado"
-        | "dinheiro_pendente"
-        | "concluido"
-        | "em_analise"
-        | "estornado"
-        | "cancelado"
       status_proposta: "enviada" | "aceita" | "recusada" | "cancelada"
       status_solicitacao:
         | "aberto"
@@ -1510,7 +1029,6 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderador", "usuario"],
-      forma_pagamento: ["pix", "credito", "debito", "dinheiro"],
       status_contrato: [
         "ativo",
         "concluido",
@@ -1522,17 +1040,6 @@ export const Constants = {
         "disputado",
       ],
       status_documento: ["pendente", "aprovado", "recusado"],
-      status_pagamento: [
-        "aguardando_pagamento",
-        "pendente",
-        "aprovado",
-        "recusado",
-        "dinheiro_pendente",
-        "concluido",
-        "em_analise",
-        "estornado",
-        "cancelado",
-      ],
       status_proposta: ["enviada", "aceita", "recusada", "cancelada"],
       status_solicitacao: [
         "aberto",
