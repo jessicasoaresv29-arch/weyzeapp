@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, MapPin, Clock, ChevronRight, Inbox, Send, CheckCircle2, Wallet, Images, CalendarDays, MessageSquare } from "lucide-react";
+import { Loader2, MapPin, Clock, ChevronRight, Inbox, Send, CheckCircle2, Images, CalendarDays, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -76,8 +76,7 @@ function Painel() {
         <Stat icon={Send} label="Propostas" value={propostasQ.data?.length ?? 0} />
       </div>
 
-      <nav className="mx-6 grid grid-cols-3 gap-3">
-        <QuickLink to="/app/financeiro" icon={Wallet} label="Financeiro" />
+      <nav className="mx-6 grid grid-cols-2 gap-3">
         <QuickLink to="/app/portfolio" icon={Images} label="Portfólio" />
         <QuickLink to="/app/agenda" icon={CalendarDays} label="Agenda" />
       </nav>
