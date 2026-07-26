@@ -107,6 +107,92 @@ export type Database = {
           },
         ]
       }
+      carteira_transacoes: {
+        Row: {
+          carteira_id: string
+          created_at: string
+          descricao: string | null
+          id: string
+          pagamento_id: string | null
+          saldo_apos: number
+          tipo: Database["public"]["Enums"]["tipo_transacao_carteira"]
+          valor: number
+        }
+        Insert: {
+          carteira_id: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          pagamento_id?: string | null
+          saldo_apos?: number
+          tipo: Database["public"]["Enums"]["tipo_transacao_carteira"]
+          valor: number
+        }
+        Update: {
+          carteira_id?: string
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          pagamento_id?: string | null
+          saldo_apos?: number
+          tipo?: Database["public"]["Enums"]["tipo_transacao_carteira"]
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "carteira_transacoes_carteira_id_fkey"
+            columns: ["carteira_id"]
+            isOneToOne: false
+            referencedRelation: "carteiras"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "carteira_transacoes_pagamento_id_fkey"
+            columns: ["pagamento_id"]
+            isOneToOne: false
+            referencedRelation: "pagamentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      carteiras: {
+        Row: {
+          available_balance: number
+          created_at: string
+          id: string
+          pending_balance: number
+          prestador_id: string
+          total_balance: number
+          updated_at: string
+        }
+        Insert: {
+          available_balance?: number
+          created_at?: string
+          id?: string
+          pending_balance?: number
+          prestador_id: string
+          total_balance?: number
+          updated_at?: string
+        }
+        Update: {
+          available_balance?: number
+          created_at?: string
+          id?: string
+          pending_balance?: number
+          prestador_id?: string
+          total_balance?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "carteiras_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: true
+            referencedRelation: "prestadores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categorias: {
         Row: {
           cor: string
@@ -131,6 +217,30 @@ export type Database = {
           id?: string
           nome?: string
           ordem?: number
+        }
+        Relationships: []
+      }
+      configuracoes_plataforma: {
+        Row: {
+          chave: string
+          created_at: string
+          descricao: string | null
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          chave: string
+          created_at?: string
+          descricao?: string | null
+          updated_at?: string
+          valor: number
+        }
+        Update: {
+          chave?: string
+          created_at?: string
+          descricao?: string | null
+          updated_at?: string
+          valor?: number
         }
         Relationships: []
       }
@@ -391,6 +501,36 @@ export type Database = {
           },
         ]
       }
+      mp_webhook_eventos: {
+        Row: {
+          created_at: string
+          erro: string | null
+          evento_id: string
+          id: string
+          payload: Json | null
+          processado: boolean
+          topico: string | null
+        }
+        Insert: {
+          created_at?: string
+          erro?: string | null
+          evento_id: string
+          id?: string
+          payload?: Json | null
+          processado?: boolean
+          topico?: string | null
+        }
+        Update: {
+          created_at?: string
+          erro?: string | null
+          evento_id?: string
+          id?: string
+          payload?: Json | null
+          processado?: boolean
+          topico?: string | null
+        }
+        Relationships: []
+      }
       notificacoes: {
         Row: {
           created_at: string
@@ -428,6 +568,99 @@ export type Database = {
             columns: ["usuario_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pagamentos: {
+        Row: {
+          approved_at: string | null
+          cliente_id: string
+          comissao_percentual: number
+          contrato_id: string
+          created_at: string
+          detalhe_erro: string | null
+          expires_at: string | null
+          external_reference: string
+          id: string
+          metodo: string
+          mp_payment_id: string | null
+          payment_method: string | null
+          payment_type: string | null
+          prestador_id: string
+          qr_code: string | null
+          qr_code_base64: string | null
+          raw: Json | null
+          status: string
+          ticket_url: string | null
+          updated_at: string
+          valor: number
+          valor_comissao: number
+          valor_prestador: number
+        }
+        Insert: {
+          approved_at?: string | null
+          cliente_id: string
+          comissao_percentual?: number
+          contrato_id: string
+          created_at?: string
+          detalhe_erro?: string | null
+          expires_at?: string | null
+          external_reference: string
+          id?: string
+          metodo: string
+          mp_payment_id?: string | null
+          payment_method?: string | null
+          payment_type?: string | null
+          prestador_id: string
+          qr_code?: string | null
+          qr_code_base64?: string | null
+          raw?: Json | null
+          status?: string
+          ticket_url?: string | null
+          updated_at?: string
+          valor: number
+          valor_comissao?: number
+          valor_prestador?: number
+        }
+        Update: {
+          approved_at?: string | null
+          cliente_id?: string
+          comissao_percentual?: number
+          contrato_id?: string
+          created_at?: string
+          detalhe_erro?: string | null
+          expires_at?: string | null
+          external_reference?: string
+          id?: string
+          metodo?: string
+          mp_payment_id?: string | null
+          payment_method?: string | null
+          payment_type?: string | null
+          prestador_id?: string
+          qr_code?: string | null
+          qr_code_base64?: string | null
+          raw?: Json | null
+          status?: string
+          ticket_url?: string | null
+          updated_at?: string
+          valor?: number
+          valor_comissao?: number
+          valor_prestador?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pagamentos_contrato_id_fkey"
+            columns: ["contrato_id"]
+            isOneToOne: false
+            referencedRelation: "contratos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pagamentos_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
             referencedColumns: ["id"]
           },
         ]
@@ -686,6 +919,60 @@ export type Database = {
             columns: ["solicitacao_id"]
             isOneToOne: false
             referencedRelation: "solicitacoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saques: {
+        Row: {
+          carteira_id: string
+          created_at: string
+          dados_bancarios: Json | null
+          id: string
+          observacao: string | null
+          prestador_id: string
+          processado_at: string | null
+          status: string
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          carteira_id: string
+          created_at?: string
+          dados_bancarios?: Json | null
+          id?: string
+          observacao?: string | null
+          prestador_id: string
+          processado_at?: string | null
+          status?: string
+          updated_at?: string
+          valor: number
+        }
+        Update: {
+          carteira_id?: string
+          created_at?: string
+          dados_bancarios?: Json | null
+          id?: string
+          observacao?: string | null
+          prestador_id?: string
+          processado_at?: string | null
+          status?: string
+          updated_at?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saques_carteira_id_fkey"
+            columns: ["carteira_id"]
+            isOneToOne: false
+            referencedRelation: "carteiras"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saques_prestador_id_fkey"
+            columns: ["prestador_id"]
+            isOneToOne: false
+            referencedRelation: "prestadores"
             referencedColumns: ["id"]
           },
         ]
