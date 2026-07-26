@@ -1,13 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Send, Loader2, MessageSquareWarning } from "lucide-react";
+import { ArrowLeft, Send, Loader2, MessageSquareWarning, CheckCircle2, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { PagamentoDialog } from "@/components/pagamento-dialog";
 
 export const Route = createFileRoute("/_authenticated/app/chat/$id")({
   component: ChatConversation,
@@ -22,6 +23,7 @@ function ChatConversation() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [pagamentoAberto, setPagamentoAberto] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const convQ = useQuery({
@@ -123,6 +125,16 @@ function ChatConversation() {
 
   const isCliente = conv?.cliente_id === user?.id;
   const other = isCliente ? conv?.prestadores?.profiles : conv?.cliente;
+  const statusContrato: string | undefined = contrato?.status;
+  const podePagar = isCliente && statusContrato === "aguardando_pagamento";
+
+  async function atualizarContrato(status: string, mensagem: string) {
+    if (!contrato?.id) return;
+    const { error } = await supabase.from("contratos").update({ status: status as never }).eq("id", contrato.id);
+    if (error) return toast.error(error.message);
+    toast.success(mensagem);
+    qc.invalidateQueries({ queryKey: ["contrato-por-solicitacao"] });
+  }
 
   if (convQ.isLoading) {
     return (
@@ -159,6 +171,60 @@ function ChatConversation() {
           <p className="truncate text-xs text-muted-foreground">{conv?.solicitacoes?.titulo ?? ""}</p>
         </div>
       </header>
+
+      {contrato && (
+        <div className="border-b border-border bg-card px-4 py-3">
+          {statusContrato === "disputado" ? (
+            <p className="text-sm font-medium text-destructive">Contrato em disputa — pagamento bloqueado.</p>
+          ) : statusContrato === "pago" ? (
+            <p className="flex items-center gap-2 text-sm font-medium text-success">
+              <CheckCircle2 className="h-4 w-4" /> Serviço pago — R$ {Number(contrato.valor_final ?? 0).toFixed(2)}
+            </p>
+          ) : podePagar ? (
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold">Aguardando pagamento</p>
+                <p className="text-xs text-muted-foreground">R$ {Number(contrato.valor_final ?? 0).toFixed(2)}</p>
+              </div>
+              <Button size="sm" onClick={() => setPagamentoAberto(true)} className="rounded-xl bg-success text-success-foreground hover:bg-success/90">
+                <CreditCard className="h-4 w-4" /> Pagar serviço
+              </Button>
+            </div>
+          ) : isCliente && statusContrato === "aguardando_confirmacao_cliente" ? (
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm font-medium">O prestador marcou o serviço como concluído.</p>
+              <Button size="sm" onClick={() => atualizarContrato("aguardando_pagamento", "Conclusão confirmada. Pagamento liberado.")} className="rounded-xl">
+                Confirmar conclusão
+              </Button>
+            </div>
+          ) : !isCliente && (statusContrato === "ativo" || statusContrato === "em_andamento") ? (
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm font-medium">Serviço em andamento</p>
+              <Button size="sm" variant="outline" onClick={() => atualizarContrato("aguardando_confirmacao_cliente", "Aguardando a confirmação do cliente.")} className="rounded-xl">
+                Marcar como concluído
+              </Button>
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              {statusContrato === "aguardando_confirmacao_cliente"
+                ? "Aguardando o cliente confirmar a conclusão."
+                : statusContrato === "aguardando_pagamento"
+                  ? "Aguardando o pagamento do cliente."
+                  : "Negociação em andamento."}
+            </p>
+          )}
+        </div>
+      )}
+
+      {contrato && podePagar && (
+        <PagamentoDialog
+          open={pagamentoAberto}
+          onOpenChange={setPagamentoAberto}
+          contratoId={contrato.id}
+          valor={Number(contrato.valor_final ?? 0)}
+          onPago={() => qc.invalidateQueries({ queryKey: ["contrato-por-solicitacao"] })}
+        />
+      )}
 
       <div className="flex-1 space-y-2 overflow-y-auto bg-secondary/40 p-4">
         {messages.map((m) => {

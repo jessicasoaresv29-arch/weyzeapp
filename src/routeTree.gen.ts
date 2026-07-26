@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
+import { Route as ApiPublicMercadopagoWebhookRouteImport } from './routes/api/public/mercadopago-webhook'
 import { Route as AuthenticatedAppSolicitarRouteImport } from './routes/_authenticated/app.solicitar'
 import { Route as AuthenticatedAppSolicitacoesRouteImport } from './routes/_authenticated/app.solicitacoes'
 import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authenticated/app.portfolio'
@@ -58,6 +59,12 @@ const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const ApiPublicMercadopagoWebhookRoute =
+  ApiPublicMercadopagoWebhookRouteImport.update({
+    id: '/api/public/mercadopago-webhook',
+    path: '/api/public/mercadopago-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedAppSolicitarRoute =
   AuthenticatedAppSolicitarRouteImport.update({
     id: '/solicitar',
@@ -145,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
   '/app/solicitar': typeof AuthenticatedAppSolicitarRoute
+  '/api/public/mercadopago-webhook': typeof ApiPublicMercadopagoWebhookRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/avaliar/$contratoId': typeof AuthenticatedAppAvaliarContratoIdRoute
   '/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
@@ -164,6 +172,7 @@ export interface FileRoutesByTo {
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
   '/app/solicitar': typeof AuthenticatedAppSolicitarRoute
+  '/api/public/mercadopago-webhook': typeof ApiPublicMercadopagoWebhookRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/avaliar/$contratoId': typeof AuthenticatedAppAvaliarContratoIdRoute
   '/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
@@ -186,6 +195,7 @@ export interface FileRoutesById {
   '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/_authenticated/app/solicitacoes': typeof AuthenticatedAppSolicitacoesRoute
   '/_authenticated/app/solicitar': typeof AuthenticatedAppSolicitarRoute
+  '/api/public/mercadopago-webhook': typeof ApiPublicMercadopagoWebhookRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/avaliar/$contratoId': typeof AuthenticatedAppAvaliarContratoIdRoute
   '/_authenticated/app/categoria/$id': typeof AuthenticatedAppCategoriaIdRoute
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/app/portfolio'
     | '/app/solicitacoes'
     | '/app/solicitar'
+    | '/api/public/mercadopago-webhook'
     | '/app/'
     | '/app/avaliar/$contratoId'
     | '/app/categoria/$id'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/app/portfolio'
     | '/app/solicitacoes'
     | '/app/solicitar'
+    | '/api/public/mercadopago-webhook'
     | '/app'
     | '/app/avaliar/$contratoId'
     | '/app/categoria/$id'
@@ -248,6 +260,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/portfolio'
     | '/_authenticated/app/solicitacoes'
     | '/_authenticated/app/solicitar'
+    | '/api/public/mercadopago-webhook'
     | '/_authenticated/app/'
     | '/_authenticated/app/avaliar/$contratoId'
     | '/_authenticated/app/categoria/$id'
@@ -260,6 +273,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiPublicMercadopagoWebhookRoute: typeof ApiPublicMercadopagoWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -305,6 +319,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/'
       preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
       parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/api/public/mercadopago-webhook': {
+      id: '/api/public/mercadopago-webhook'
+      path: '/api/public/mercadopago-webhook'
+      fullPath: '/api/public/mercadopago-webhook'
+      preLoaderRoute: typeof ApiPublicMercadopagoWebhookRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/app/solicitar': {
       id: '/_authenticated/app/solicitar'
@@ -463,7 +484,18 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiPublicMercadopagoWebhookRoute: ApiPublicMercadopagoWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
