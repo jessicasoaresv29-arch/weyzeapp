@@ -130,7 +130,7 @@ function ChatConversation() {
 
   async function atualizarContrato(status: string, mensagem: string) {
     if (!contrato?.id) return;
-    const { error } = await supabase.from("contratos").update({ status }).eq("id", contrato.id);
+    const { error } = await supabase.from("contratos").update({ status: status as never }).eq("id", contrato.id);
     if (error) return toast.error(error.message);
     toast.success(mensagem);
     qc.invalidateQueries({ queryKey: ["contrato-por-solicitacao"] });
