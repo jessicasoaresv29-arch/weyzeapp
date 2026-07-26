@@ -33,11 +33,11 @@ export function useAuth() {
       }
       const { data } = await supabase
         .from("profiles")
-        .select("id,nome,email,telefone,foto_url,tipo_usuario,cidade,estado,descricao,verificado")
+        .select("id,nome,telefone,foto_url,tipo_usuario,cidade,estado,descricao,verificado")
         .eq("id", u.id)
         .maybeSingle();
       if (mounted) {
-        setProfile(data as WeyzeProfile | null);
+        setProfile(data ? ({ ...data, email: u.email ?? null } as WeyzeProfile) : null);
         setLoading(false);
       }
     };
