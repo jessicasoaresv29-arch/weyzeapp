@@ -868,6 +868,7 @@ export type Database = {
         Returns: boolean
       }
       is_prestador: { Args: { _user_id: string }; Returns: boolean }
+      pode_ver_perfil: { Args: { _profile_id: string }; Returns: boolean }
       prestador_tem_proposta: {
         Args: { _solicitacao_id: string; _user_id: string }
         Returns: boolean
