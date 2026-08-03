@@ -3,7 +3,12 @@ import { createHmac, timingSafeEqual } from "crypto";
 
 /**
  * Webhook do Mercado Pago.
- * Valida a assinatura, consulta o pagamento na API oficial e só então atualiza o banco.
+ * Segurança em duas camadas:
+ * 1. O payload recebido NUNCA é confiado: o pagamento é sempre reconsultado em
+ *    /v1/payments/{id} com o Access Token, e o banco só é atualizado com a resposta oficial.
+ * 2. Validação opcional de assinatura (x-signature). Só é aplicada se
+ *    MERCADO_PAGO_WEBHOOK_SECRET estiver configurada — o Mercado Pago gera essa
+ *    "chave secreta" ao cadastrar a URL de notificação no painel de integrações.
  */
 function assinaturaValida(request: Request, dataId: string, secret: string): boolean {
   const signature = request.headers.get("x-signature");
