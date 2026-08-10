@@ -575,6 +575,9 @@ export type Database = {
       pagamentos: {
         Row: {
           approved_at: string | null
+          asaas_checkout_id: string | null
+          asaas_customer_id: string | null
+          asaas_payment_id: string | null
           cliente_id: string
           comissao_percentual: number
           contrato_id: string
@@ -587,10 +590,13 @@ export type Database = {
           mp_payment_id: string | null
           payment_method: string | null
           payment_type: string | null
+          pix_copy_paste: string | null
           prestador_id: string
+          provedor: string
           qr_code: string | null
           qr_code_base64: string | null
           raw: Json | null
+          refunded_at: string | null
           status: string
           ticket_url: string | null
           updated_at: string
@@ -600,6 +606,9 @@ export type Database = {
         }
         Insert: {
           approved_at?: string | null
+          asaas_checkout_id?: string | null
+          asaas_customer_id?: string | null
+          asaas_payment_id?: string | null
           cliente_id: string
           comissao_percentual?: number
           contrato_id: string
@@ -612,10 +621,13 @@ export type Database = {
           mp_payment_id?: string | null
           payment_method?: string | null
           payment_type?: string | null
+          pix_copy_paste?: string | null
           prestador_id: string
+          provedor?: string
           qr_code?: string | null
           qr_code_base64?: string | null
           raw?: Json | null
+          refunded_at?: string | null
           status?: string
           ticket_url?: string | null
           updated_at?: string
@@ -625,6 +637,9 @@ export type Database = {
         }
         Update: {
           approved_at?: string | null
+          asaas_checkout_id?: string | null
+          asaas_customer_id?: string | null
+          asaas_payment_id?: string | null
           cliente_id?: string
           comissao_percentual?: number
           contrato_id?: string
@@ -637,10 +652,13 @@ export type Database = {
           mp_payment_id?: string | null
           payment_method?: string | null
           payment_type?: string | null
+          pix_copy_paste?: string | null
           prestador_id?: string
+          provedor?: string
           qr_code?: string | null
           qr_code_base64?: string | null
           raw?: Json | null
+          refunded_at?: string | null
           status?: string
           ticket_url?: string | null
           updated_at?: string
@@ -664,6 +682,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      payment_events: {
+        Row: {
+          asaas_payment_id: string | null
+          created_at: string
+          error: string | null
+          event_id: string
+          event_type: string | null
+          id: string
+          payload: Json | null
+          processed: boolean
+          provider: string
+          updated_at: string
+        }
+        Insert: {
+          asaas_payment_id?: string | null
+          created_at?: string
+          error?: string | null
+          event_id: string
+          event_type?: string | null
+          id?: string
+          payload?: Json | null
+          processed?: boolean
+          provider?: string
+          updated_at?: string
+        }
+        Update: {
+          asaas_payment_id?: string | null
+          created_at?: string
+          error?: string | null
+          event_id?: string
+          event_type?: string | null
+          id?: string
+          payload?: Json | null
+          processed?: boolean
+          provider?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       pesquisas_ia: {
         Row: {
@@ -823,6 +880,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          asaas_customer_id: string | null
           cidade: string | null
           created_at: string
           descricao: string | null
@@ -839,6 +897,7 @@ export type Database = {
           verificado: boolean
         }
         Insert: {
+          asaas_customer_id?: string | null
           cidade?: string | null
           created_at?: string
           descricao?: string | null
@@ -855,6 +914,7 @@ export type Database = {
           verificado?: boolean
         }
         Update: {
+          asaas_customer_id?: string | null
           cidade?: string | null
           created_at?: string
           descricao?: string | null
