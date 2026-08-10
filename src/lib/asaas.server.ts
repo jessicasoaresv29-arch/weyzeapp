@@ -1,6 +1,8 @@
 // Camada de acesso ao Asaas. SERVER-ONLY: a API Key nunca sai daqui.
 // Nesta etapa a infraestrutura está pronta, mas nenhuma cobrança real é criada.
 
+import { createHash } from "crypto";
+
 const SANDBOX_URL = "https://api-sandbox.asaas.com/v3";
 const PRODUCTION_URL = "https://api.asaas.com/v3";
 const TIMEOUT_MS = 12_000;
@@ -122,6 +124,18 @@ export interface AsaasPixQr {
   expirationDate?: string;
 }
 
+/** Gera uma Idempotency-Key determinística com no máximo 48 caracteres. */
+function buildIdempotencyKey(baseId: string): string {
+  const prefix = "weyze-";
+  const candidate = `${prefix}${baseId}`;
+  if (candidate.length <= 48) return candidate;
+
+  // Fallback determinístico: SHA-256 truncado para caber no limite.
+  const hash = createHash("sha256").update(baseId).digest("hex");
+  const maxHash = 48 - prefix.length; // 42
+  return `${prefix}${hash.slice(0, maxHash)}`;
+}
+
 /** Cria uma cobrança PIX no Asaas. */
 export async function criarCobrancaPix(params: {
   customerId: string;
@@ -132,7 +146,7 @@ export async function criarCobrancaPix(params: {
 }) {
   return asaasRequest<any>("/payments", {
     method: "POST",
-    idempotencyKey: `pix-${params.externalReference}`,
+    idempotencyKey: buildIdempotencyKey(params.externalReference),
     body: JSON.stringify({
       customer: params.customerId,
       billingType: "PIX",
