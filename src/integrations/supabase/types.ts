@@ -162,6 +162,7 @@ export type Database = {
           id: string
           pending_balance: number
           prestador_id: string
+          settlement_pending_balance: number
           total_balance: number
           updated_at: string
         }
@@ -171,6 +172,7 @@ export type Database = {
           id?: string
           pending_balance?: number
           prestador_id: string
+          settlement_pending_balance?: number
           total_balance?: number
           updated_at?: string
         }
@@ -180,6 +182,7 @@ export type Database = {
           id?: string
           pending_balance?: number
           prestador_id?: string
+          settlement_pending_balance?: number
           total_balance?: number
           updated_at?: string
         }
@@ -588,6 +591,7 @@ export type Database = {
           id: string
           metodo: string
           mp_payment_id: string | null
+          paid_at: string | null
           payment_method: string | null
           payment_type: string | null
           pix_copy_paste: string | null
@@ -597,6 +601,7 @@ export type Database = {
           qr_code_base64: string | null
           raw: Json | null
           refunded_at: string | null
+          settlement_status: string
           status: string
           ticket_url: string | null
           updated_at: string
@@ -619,6 +624,7 @@ export type Database = {
           id?: string
           metodo: string
           mp_payment_id?: string | null
+          paid_at?: string | null
           payment_method?: string | null
           payment_type?: string | null
           pix_copy_paste?: string | null
@@ -628,6 +634,7 @@ export type Database = {
           qr_code_base64?: string | null
           raw?: Json | null
           refunded_at?: string | null
+          settlement_status?: string
           status?: string
           ticket_url?: string | null
           updated_at?: string
@@ -650,6 +657,7 @@ export type Database = {
           id?: string
           metodo?: string
           mp_payment_id?: string | null
+          paid_at?: string | null
           payment_method?: string | null
           payment_type?: string | null
           pix_copy_paste?: string | null
@@ -659,6 +667,7 @@ export type Database = {
           qr_code_base64?: string | null
           raw?: Json | null
           refunded_at?: string | null
+          settlement_status?: string
           status?: string
           ticket_url?: string | null
           updated_at?: string

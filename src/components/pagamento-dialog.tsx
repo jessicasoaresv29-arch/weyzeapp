@@ -80,7 +80,7 @@ export function PagamentoDialog({ open, onOpenChange, contratoId, valor, onPago 
           <div className="flex flex-col items-center gap-3 py-6 text-center">
             <CheckCircle2 className="h-14 w-14 text-success" />
             <p className="text-lg font-semibold">R$ {valor.toFixed(2)} pago</p>
-            <p className="text-sm text-muted-foreground">O prestador já foi notificado e o valor foi creditado na carteira dele.</p>
+            <p className="text-sm text-muted-foreground">O prestador já foi notificado. O valor entra em liquidação antes do repasse.</p>
             <Button className="mt-2 w-full rounded-xl" onClick={() => onOpenChange(false)}>Fechar</Button>
           </div>
         ) : (

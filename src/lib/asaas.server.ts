@@ -157,8 +157,12 @@ export async function buscarQrCodePix(paymentId: string, tentativas = 3): Promis
   return null;
 }
 
-/** Credita o valor líquido na carteira do prestador (uma única vez por pagamento). */
-async function creditarCarteira(
+/**
+ * Registra o valor líquido do prestador como SALDO AGUARDANDO LIQUIDAÇÃO.
+ * NÃO disponibiliza para saque: `available_balance` não é tocado.
+ * Executado uma única vez por pagamento (idempotente por pagamento_id).
+ */
+async function registrarLiquidacaoPendente(
   admin: Awaited<ReturnType<typeof getAdmin>>,
   pagamento: any,
 ) {
@@ -171,7 +175,7 @@ async function creditarCarteira(
 
   let { data: carteira } = await admin
     .from("carteiras" as any)
-    .select("id, available_balance, total_balance")
+    .select("id, available_balance, total_balance, settlement_pending_balance")
     .eq("prestador_id", pagamento.prestador_id)
     .maybeSingle();
 
@@ -179,30 +183,33 @@ async function creditarCarteira(
     const criada = await admin
       .from("carteiras" as any)
       .insert({ prestador_id: pagamento.prestador_id })
-      .select("id, available_balance, total_balance")
+      .select("id, available_balance, total_balance, settlement_pending_balance")
       .single();
     carteira = criada.data as any;
   }
   if (!carteira) return;
 
-  const liquido = Number(pagamento.valor_prestador ?? 0);
-  const novoSaldo = Number((carteira as any).available_balance ?? 0) + liquido;
+  const liquido = Math.round(Number(pagamento.valor_prestador ?? 0) * 100) / 100;
+  const disponivel = Number((carteira as any).available_balance ?? 0); // inalterado
+  const aguardando =
+    Math.round((Number((carteira as any).settlement_pending_balance ?? 0) + liquido) * 100) / 100;
 
   await admin
     .from("carteiras" as any)
     .update({
-      available_balance: novoSaldo,
-      total_balance: Number((carteira as any).total_balance ?? 0) + liquido,
+      settlement_pending_balance: aguardando,
+      total_balance: Math.round((Number((carteira as any).total_balance ?? 0) + liquido) * 100) / 100,
     })
     .eq("id", (carteira as any).id);
 
+  // Registro financeiro de auditoria — não representa saldo disponível.
   await admin.from("carteira_transacoes" as any).insert({
     carteira_id: (carteira as any).id,
     pagamento_id: pagamento.id,
     tipo: "credito",
     valor: liquido,
-    saldo_apos: novoSaldo,
-    descricao: "Pagamento PIX recebido (Asaas)",
+    saldo_apos: disponivel,
+    descricao: "Pagamento PIX confirmado (Asaas) — aguardando liquidação",
   });
 }
 
@@ -235,18 +242,22 @@ export async function aplicarStatusCobranca(
           ? "expirado"
           : "pendente";
 
+  const agora = new Date().toISOString();
   await admin
     .from("pagamentos" as any)
     .update({
       status: statusInterno,
-      approved_at: pago ? new Date().toISOString() : (pagamento as any).approved_at,
-      refunded_at: externo === "REFUNDED" ? new Date().toISOString() : (pagamento as any).refunded_at,
+      approved_at: pago ? ((pagamento as any).approved_at ?? agora) : (pagamento as any).approved_at,
+      paid_at: pago ? ((pagamento as any).paid_at ?? agora) : (pagamento as any).paid_at,
+      refunded_at: externo === "REFUNDED" ? agora : (pagamento as any).refunded_at,
       raw: cobranca,
     })
     .eq("id", (pagamento as any).id);
 
   if (pago) {
-    await creditarCarteira(admin, pagamento);
+    // Confirma o pagamento e registra o líquido como pendente de liquidação.
+    // Nenhum saque, transferência ou split é executado aqui.
+    await registrarLiquidacaoPendente(admin, pagamento);
     await admin
       .from("contratos")
       .update({ status: "pago" as any })
