@@ -1,6 +1,8 @@
 // Camada de acesso ao Asaas. SERVER-ONLY: a API Key nunca sai daqui.
 // Nesta etapa a infraestrutura está pronta, mas nenhuma cobrança real é criada.
 
+import { createHash } from "crypto";
+
 const SANDBOX_URL = "https://api-sandbox.asaas.com/v3";
 const PRODUCTION_URL = "https://api.asaas.com/v3";
 const TIMEOUT_MS = 12_000;
