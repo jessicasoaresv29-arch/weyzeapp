@@ -143,13 +143,18 @@ export async function criarCobrancaPix(params: {
   });
 }
 
-/** Busca o QR Code PIX de uma cobrança (pode não estar pronto imediatamente). */
-export async function buscarQrCodePix(paymentId: string): Promise<AsaasPixQr | null> {
-  try {
-    return await asaasRequest<AsaasPixQr>(`/payments/${paymentId}/pixQrCode`, { method: "GET" });
-  } catch {
-    return null;
+/** Busca o QR Code PIX de uma cobrança (fica pronto poucos instantes após a criação). */
+export async function buscarQrCodePix(paymentId: string, tentativas = 3): Promise<AsaasPixQr | null> {
+  for (let i = 0; i < tentativas; i++) {
+    try {
+      const qr = await asaasRequest<AsaasPixQr>(`/payments/${paymentId}/pixQrCode`, { method: "GET" });
+      if (qr?.payload) return qr;
+    } catch {
+      /* tenta novamente */
+    }
+    await new Promise((r) => setTimeout(r, 900));
   }
+  return null;
 }
 
 /** Credita o valor líquido na carteira do prestador (uma única vez por pagamento). */
