@@ -174,6 +174,7 @@ export const createAsaasPixCharge = createServerFn({ method: "POST" })
     }
     const valor = Number(contrato.valor_final ?? 0);
     if (!(valor > 0)) throw new Error("Valor do serviço indisponível.");
+    if (valor < 5) throw new Error("O valor mínimo para pagamento via PIX é R$ 5,00.");
 
     // Duplicidade: reaproveita cobrança ativa do mesmo contrato.
     const { data: existente } = await admin
@@ -260,6 +261,17 @@ export const syncAsaasPixCharge = createServerFn({ method: "POST" })
     if ((pagamento as any).asaas_payment_id && asaas.asaasConfigurado()) {
       const cobranca = await asaas.buscarCobranca((pagamento as any).asaas_payment_id);
       await asaas.aplicarStatusCobranca(admin, cobranca);
+
+      // Backfill: o QR Code pode ficar pronto alguns segundos após a criação.
+      if (!(pagamento as any).pix_copy_paste) {
+        const qr = await asaas.buscarQrCodePix((pagamento as any).asaas_payment_id, 1);
+        if (qr?.payload) {
+          await admin
+            .from("pagamentos" as any)
+            .update({ pix_copy_paste: qr.payload, qr_code_base64: qr.encodedImage ?? null })
+            .eq("id", (pagamento as any).id);
+        }
+      }
     }
 
     const { data: atualizado } = await admin
