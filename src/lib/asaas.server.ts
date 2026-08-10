@@ -122,6 +122,22 @@ export interface AsaasPixQr {
   expirationDate?: string;
 }
 
+/** Gera uma Idempotency-Key determinística com no máximo 48 caracteres. */
+function buildIdempotencyKey(baseId: string): string {
+  const prefix = "weyze-";
+  const candidate = `${prefix}${baseId}`;
+  if (candidate.length <= 48) return candidate;
+
+  // Fallback determinístico: SHA-256 truncado para caber no limite.
+  const hash = crypto.subtle
+    ? Buffer.from(
+        crypto.createHash("sha256").update(baseId).digest(),
+      ).toString("hex")
+    : baseId;
+  const maxHash = 48 - prefix.length; // 42
+  return `${prefix}${hash.slice(0, maxHash)}`;
+}
+
 /** Cria uma cobrança PIX no Asaas. */
 export async function criarCobrancaPix(params: {
   customerId: string;
@@ -132,7 +148,7 @@ export async function criarCobrancaPix(params: {
 }) {
   return asaasRequest<any>("/payments", {
     method: "POST",
-    idempotencyKey: `pix-${params.externalReference}`,
+    idempotencyKey: buildIdempotencyKey(params.externalReference),
     body: JSON.stringify({
       customer: params.customerId,
       billingType: "PIX",
