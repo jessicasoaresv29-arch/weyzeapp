@@ -131,11 +131,7 @@ function buildIdempotencyKey(baseId: string): string {
   if (candidate.length <= 48) return candidate;
 
   // Fallback determinístico: SHA-256 truncado para caber no limite.
-  const hash = crypto.subtle
-    ? Buffer.from(
-        crypto.createHash("sha256").update(baseId).digest(),
-      ).toString("hex")
-    : baseId;
+  const hash = createHash("sha256").update(baseId).digest("hex");
   const maxHash = 48 - prefix.length; // 42
   return `${prefix}${hash.slice(0, maxHash)}`;
 }
