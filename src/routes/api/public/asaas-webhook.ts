@@ -49,6 +49,8 @@ export const Route = createFileRoute("/api/public/asaas-webhook")({
             // Nunca confiamos no payload: a API oficial é a fonte de verdade.
             const cobranca = await asaas.buscarCobranca(paymentId);
             asaas.logSeguro("webhook", { eventType, paymentId, status: cobranca?.status });
+            // Só a resposta oficial da API pode mudar o status (inclusive para PAID).
+            await asaas.aplicarStatusCobranca(admin, cobranca);
           } else {
             asaas.logSeguro("webhook:sem-credencial", { eventType, paymentId });
           }

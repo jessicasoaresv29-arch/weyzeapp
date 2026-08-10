@@ -111,3 +111,148 @@ export async function marcarEventoProcessado(
     .eq("provider", "asaas")
     .eq("event_id", eventId);
 }
+/* ------------------------------------------------------------------ *
+ * PIX — criação de cobrança e aplicação de status (fonte: API Asaas)  *
+ * ------------------------------------------------------------------ */
+
+export interface AsaasPixQr {
+  encodedImage?: string;
+  payload?: string;
+  expirationDate?: string;
+}
+
+/** Cria uma cobrança PIX no Asaas. */
+export async function criarCobrancaPix(params: {
+  customerId: string;
+  valor: number;
+  descricao: string;
+  externalReference: string;
+  vencimento: string; // YYYY-MM-DD
+}) {
+  return asaasRequest<any>("/payments", {
+    method: "POST",
+    idempotencyKey: `pix-${params.externalReference}`,
+    body: JSON.stringify({
+      customer: params.customerId,
+      billingType: "PIX",
+      value: Number(params.valor.toFixed(2)),
+      dueDate: params.vencimento,
+      description: params.descricao,
+      externalReference: params.externalReference,
+    }),
+  });
+}
+
+/** Busca o QR Code PIX de uma cobrança (fica pronto poucos instantes após a criação). */
+export async function buscarQrCodePix(paymentId: string, tentativas = 3): Promise<AsaasPixQr | null> {
+  for (let i = 0; i < tentativas; i++) {
+    try {
+      const qr = await asaasRequest<AsaasPixQr>(`/payments/${paymentId}/pixQrCode`, { method: "GET" });
+      if (qr?.payload) return qr;
+    } catch {
+      /* tenta novamente */
+    }
+    await new Promise((r) => setTimeout(r, 900));
+  }
+  return null;
+}
+
+/** Credita o valor líquido na carteira do prestador (uma única vez por pagamento). */
+async function creditarCarteira(
+  admin: Awaited<ReturnType<typeof getAdmin>>,
+  pagamento: any,
+) {
+  const { data: existente } = await admin
+    .from("carteira_transacoes" as any)
+    .select("id")
+    .eq("pagamento_id", pagamento.id)
+    .maybeSingle();
+  if (existente) return;
+
+  let { data: carteira } = await admin
+    .from("carteiras" as any)
+    .select("id, available_balance, total_balance")
+    .eq("prestador_id", pagamento.prestador_id)
+    .maybeSingle();
+
+  if (!carteira) {
+    const criada = await admin
+      .from("carteiras" as any)
+      .insert({ prestador_id: pagamento.prestador_id })
+      .select("id, available_balance, total_balance")
+      .single();
+    carteira = criada.data as any;
+  }
+  if (!carteira) return;
+
+  const liquido = Number(pagamento.valor_prestador ?? 0);
+  const novoSaldo = Number((carteira as any).available_balance ?? 0) + liquido;
+
+  await admin
+    .from("carteiras" as any)
+    .update({
+      available_balance: novoSaldo,
+      total_balance: Number((carteira as any).total_balance ?? 0) + liquido,
+    })
+    .eq("id", (carteira as any).id);
+
+  await admin.from("carteira_transacoes" as any).insert({
+    carteira_id: (carteira as any).id,
+    pagamento_id: pagamento.id,
+    tipo: "credito",
+    valor: liquido,
+    saldo_apos: novoSaldo,
+    descricao: "Pagamento PIX recebido (Asaas)",
+  });
+}
+
+/**
+ * Aplica no banco o status retornado pela API oficial do Asaas.
+ * Nunca é chamado com dados vindos do frontend.
+ */
+export async function aplicarStatusCobranca(
+  admin: Awaited<ReturnType<typeof getAdmin>>,
+  cobranca: any,
+) {
+  const { mapAsaasStatus } = await import("./asaas.types");
+  const externo = mapAsaasStatus(cobranca?.status);
+
+  const { data: pagamento } = await admin
+    .from("pagamentos" as any)
+    .select("*")
+    .eq("asaas_payment_id", cobranca?.id)
+    .maybeSingle();
+  if (!pagamento) return null;
+
+  const pago = externo === "PAID";
+  const statusInterno = pago
+    ? "aprovado"
+    : externo === "REFUNDED"
+      ? "estornado"
+      : externo === "CANCELED"
+        ? "cancelado"
+        : externo === "OVERDUE"
+          ? "expirado"
+          : "pendente";
+
+  await admin
+    .from("pagamentos" as any)
+    .update({
+      status: statusInterno,
+      approved_at: pago ? new Date().toISOString() : (pagamento as any).approved_at,
+      refunded_at: externo === "REFUNDED" ? new Date().toISOString() : (pagamento as any).refunded_at,
+      raw: cobranca,
+    })
+    .eq("id", (pagamento as any).id);
+
+  if (pago) {
+    await creditarCarteira(admin, pagamento);
+    await admin
+      .from("contratos")
+      .update({ status: "pago" as any })
+      .eq("id", (pagamento as any).contrato_id);
+  }
+
+  logSeguro("status-aplicado", { pagamentoId: (pagamento as any).id, externo });
+  return { pagamentoId: (pagamento as any).id, status: statusInterno, statusExterno: externo };
+}
