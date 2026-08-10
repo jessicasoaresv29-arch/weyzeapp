@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { usePagamento } from "@/hooks/use-pagamento";
+import { useAsaasPix } from "@/hooks/use-asaas-pix";
 import type { MetodoPagamento } from "@/lib/pagamentos.types";
 
 let sdkIniciado = false;
@@ -20,6 +21,7 @@ interface Props {
 
 export function PagamentoDialog({ open, onOpenChange, contratoId, valor, onPago }: Props) {
   const { pagamento, publicKey, loading, erro, setErro, iniciar, pagarComCartao, cancelarPagamento } = usePagamento(contratoId);
+  const pix = useAsaasPix(contratoId);
   const [metodo, setMetodo] = useState<MetodoPagamento | null>(null);
 
   useEffect(() => {
@@ -36,18 +38,30 @@ export function PagamentoDialog({ open, onOpenChange, contratoId, valor, onPago 
     }
   }, [pagamento?.status, onPago]);
 
+  useEffect(() => {
+    if (pix.pago) {
+      toast.success("Pagamento confirmado!");
+      onPago?.();
+    }
+  }, [pix.pago, onPago]);
+
   async function escolher(m: MetodoPagamento) {
     setMetodo(m);
+    if (m === "pix") {
+      await pix.gerar();
+      return;
+    }
     await iniciar(m);
   }
 
   function copiarPix() {
-    if (!pagamento?.qr_code) return;
-    navigator.clipboard.writeText(pagamento.qr_code);
+    const codigo = pix.cobranca?.pixCopyPaste;
+    if (!codigo) return;
+    navigator.clipboard.writeText(codigo);
     toast.success("Código PIX copiado!");
   }
 
-  const aprovado = pagamento?.status === "aprovado";
+  const aprovado = pagamento?.status === "aprovado" || pix.pago;
 
   return (
     <Dialog
@@ -76,10 +90,10 @@ export function PagamentoDialog({ open, onOpenChange, contratoId, valor, onPago 
               <p className="text-2xl font-bold text-foreground">R$ {valor.toFixed(2)}</p>
             </div>
 
-            {erro && (
+        {(erro || pix.erro) && (
               <div className="flex items-start gap-2 rounded-xl bg-destructive/10 p-3 text-sm text-destructive">
                 <XCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                <span>{erro}</span>
+              <span>{erro ?? pix.erro}</span>
               </div>
             )}
 
@@ -94,33 +108,23 @@ export function PagamentoDialog({ open, onOpenChange, contratoId, valor, onPago 
               </div>
             )}
 
-            {loading && (
+            {(loading || pix.loading) && (
               <div className="flex items-center justify-center py-6">
                 <Loader2 className="h-6 w-6 animate-spin text-primary" />
               </div>
             )}
 
-            {metodo === "pix" && pagamento?.qr_code && !loading && (
+            {metodo === "pix" && pix.cobranca && !pix.loading && (
               <div className="flex flex-col items-center gap-3">
-                {pagamento.qr_code_base64 && (
-                  <img src={`data:image/png;base64,${pagamento.qr_code_base64}`} alt="QR Code PIX" className="h-52 w-52 rounded-xl border border-border" />
+                <p className="text-sm font-semibold text-foreground">Pague via PIX</p>
+                {pix.cobranca.qrCodeBase64 && (
+                  <img src={`data:image/png;base64,${pix.cobranca.qrCodeBase64}`} alt="QR Code PIX" className="h-52 w-52 rounded-xl border border-border" />
                 )}
                 <p className="text-center text-sm text-muted-foreground">Escaneie o QR Code ou use o código copia e cola.</p>
-                <Button variant="outline" className="w-full rounded-xl" onClick={copiarPix}>
+                <Button variant="outline" className="w-full rounded-xl" disabled={!pix.cobranca.pixCopyPaste} onClick={copiarPix}>
                   <Copy className="h-4 w-4" /> Copiar código PIX
                 </Button>
-                <p className="text-xs text-muted-foreground">Aguardando confirmação do pagamento…</p>
-                <Button
-                  variant="ghost"
-                  className="w-full rounded-xl text-muted-foreground"
-                  onClick={async () => {
-                    await cancelarPagamento();
-                    setMetodo(null);
-                    setErro(null);
-                  }}
-                >
-                  Gerar novo PIX / trocar método
-                </Button>
+                <p className="text-xs text-muted-foreground">Aguardando pagamento…</p>
               </div>
             )}
 
