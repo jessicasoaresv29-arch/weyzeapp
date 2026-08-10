@@ -47,6 +47,7 @@ export async function asaasRequest<T = any>(
       ...init,
       signal: controller.signal,
       headers: {
+        "User-Agent": "Weyze/1.0 (Node.js; sandbox)",
         access_token: apiKey(),
         "Content-Type": "application/json",
         ...(init.idempotencyKey ? { "Idempotency-Key": init.idempotencyKey } : {}),
